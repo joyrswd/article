@@ -30,6 +30,9 @@ class OpenAiRepository
      */
     public function excute(): array
     {
+        if (empty($this->messages)) {
+            return [];
+        }
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',

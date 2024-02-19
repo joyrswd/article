@@ -24,4 +24,12 @@ abstract class FeatureTestCase extends TestCase
         $prop->setValue($class, $value);
     }
 
+    protected function getPrivateProperty(string $propName, Object $class): mixed
+    {
+        $reflectionClass = new ReflectionClass($class);
+        $prop = $reflectionClass->getProperty($propName);
+        $prop->setAccessible(true);
+        return $prop->getValue($class);
+    }
+
 }
