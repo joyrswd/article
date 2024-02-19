@@ -46,7 +46,8 @@ class OpenAiService
 
     public function makeTitle(string $article): string
     {
-        $this->repository->setMessage("{$article}\nこの文章にタイトルをつけてください。", OpenAiRoleEnum::System);
+        $this->repository->setMessage("次にユーザーが入力する文章のタイトルを作ってください。", OpenAiRoleEnum::System);
+        $this->repository->setMessage($article);
         $response = $this->repository->excute();
         return empty($response) ? '' : $response['choices'][0]['message']['content'];
     }
@@ -54,15 +55,16 @@ class OpenAiService
 
     private function makeSystemMessage(string $author, DateTime $date): string
     {
-        $targetDate = $date->format('n月j日');
+        $month = $date->format('n月');
         $message = <<<MESSAGE
 あなたは{$author}です。
-{$author}が書くような内容と文体の記事を書いてください。
+{$month}にまつわる記事を書いてください。
+{$author}が書くような内容と文体にしてください。
 MESSAGE;
         if (empty($this->conditions) === false) {
             $message .= "次のルールに従ってください。\n";
             foreach ($this->conditions as $text) {
-                $condition = $this->convert($text, $author, $targetDate);
+                $condition = $this->convert($text, $author, $month);
                 $message .= "- {$condition}\n";
             }
         }
@@ -79,11 +81,11 @@ MESSAGE;
         return "{$genre}マニアの{$adjective}で{$personality}な{$generation}";
     }
 
-    private function convert(string $text, string $author, string $date)
+    private function convert(string $text, string $author, string $month)
     {
         $placeHolder = [
             '{author}' => $author,
-            '{date}' => $date,
+            '{month}' => $month,
         ];
         foreach ($this->attributes as $key => $value) {
             $index = '{' . $key . '}';

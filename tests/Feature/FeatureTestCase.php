@@ -8,12 +8,20 @@ use ReflectionClass;
 
 abstract class FeatureTestCase extends TestCase
 {
-    protected function callPrivate($methodName, $className, ...$args): mixed
+    protected function callPrivateMethod(string $methodName, Object $class, ...$args): mixed
     {
-        $class = app($className);
         $reflectionClass = new ReflectionClass($class);
         $method = $reflectionClass->getMethod($methodName);
         $method->setAccessible(true);
         return $method->invoke($class, ...$args);
     }
+
+    protected function setPrivateProperty(string $propName, mixed $value, Object $class): void
+    {
+        $reflectionClass = new ReflectionClass($class);
+        $prop = $reflectionClass->getProperty($propName);
+        $prop->setAccessible(true);
+        $prop->setValue($class, $value);
+    }
+
 }
