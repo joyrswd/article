@@ -1,15 +1,15 @@
 <?php
 // 本フォイルをコピーしてllm.phpにリネームして使用してください。
 return [
-    'openai' => [
-        'params' => [
+    'ai' => [
+        'openai' => [
             'secret' => '', // OpenAiのAPIシークレット
             'endpoint' => '', // OpenAiのAPIエンドポイント
             'model' => '', // OpenAiのAPI言語モデル
             'timeout' => 60, // OpenAiのAPI通信接続時間（秒）
         ],
-        'command' => <<<COMMAND
-ユーザーから入力される日にちに関する記事を書いてください。
-COMMAND //OpenAiのシステムへのメッセージ
+    ],
+    'condition' => [ //出力される記事の内容を制御する場合に追加（配列）
+
     ]
 ];

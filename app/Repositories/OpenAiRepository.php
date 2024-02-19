@@ -37,6 +37,8 @@ class OpenAiRepository
             ])->timeout($this->timeout)->post($this->endpoint, [
                 'model' => $this->model,
                 'messages' => $this->messages,
+                'presence_penalty' => 1,
+                'top_p' => 0,
             ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
