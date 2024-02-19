@@ -15,25 +15,28 @@ use DateTime;
 class OpenAiService
 {
     private OpenAiRepository $repository;
+    private array $attributes=[];
+    private array $conditions = [];
 
-    public function __construct(OpenAiRepository $repository)
+    public function __construct(OpenAiRepository $repository, ?array $conditions = [])
     {
         $this->repository = $repository;
+        $this->conditions = $conditions;
     }
 
     public function makePost(DateTime $date): array
     {
         $author = $this->makeAuthor();
-        $message = $this->makeSystemMessage($author);
-        $article = $this->makeArticle($message, $date);
+        $article = $this->makeArticle($author, $date);
         $title = $this->makeTitle($article);
-        return compact('author', 'title', 'article');
+        $attributes = $this->attributes;
+        return compact('title', 'article', 'author', 'attributes');
     }
 
-    public function makeArticle(string $systemMessage, DateTime $date): string
+    public function makeArticle(string $author, DateTime $date): string
     {
-        $this->repository->setMessage($systemMessage, OpenAiRoleEnum::System);
-        $this->repository->setMessage($date->format('n月j日'));
+        $message = $this->makeSystemMessage($author, $date);
+        $this->repository->setMessage($message, OpenAiRoleEnum::System);
         $response = $this->repository->excute();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
@@ -49,13 +52,21 @@ class OpenAiService
     }
 
 
-    private function makeSystemMessage(string $author): string
+    private function makeSystemMessage(string $author, DateTime $date): string
     {
-        return <<<MESSAGE
+        $targetDate = $date->format('n月j日');
+        $message = <<<MESSAGE
 あなたは{$author}です。
-ユーザーから入力される日にちに関する記事を書いてください。
-{$author}が書くような内容と文体にしてください。
+{$author}が書くような内容と文体の記事を書いてください。
 MESSAGE;
+        if (empty($this->conditions) === false) {
+            $message .= "次のルールに従ってください。\n";
+            foreach ($this->conditions as $text) {
+                $condition = $this->convert($text, $author, $targetDate);
+                $message .= "- {$condition}\n";
+            }
+        }
+        return $message;
     }
 
     private function makeAuthor(): string
@@ -64,6 +75,20 @@ MESSAGE;
         $adjective = AiAdjectiveEnum::randomValue();
         $personality = AiPersonalityEnum::randomValue();
         $generation = AiGenerationEnum::randomValue();
-        return "{$genre}に詳しい{$adjective}で{$personality}な{$generation}";
+        $this->attributes = compact('genre', 'adjective', 'personality', 'generation');
+        return "{$genre}マニアの{$adjective}で{$personality}な{$generation}";
+    }
+
+    private function convert(string $text, string $author, string $date)
+    {
+        $placeHolder = [
+            '{author}' => $author,
+            '{date}' => $date,
+        ];
+        foreach ($this->attributes as $key => $value) {
+            $index = '{' . $key . '}';
+            $placeHolder[$index] = $value;
+        }
+        return strtr($text, $placeHolder);
     }
 }
