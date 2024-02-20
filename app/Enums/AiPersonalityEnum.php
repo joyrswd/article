@@ -11,7 +11,7 @@ enum AiPersonalityEnum:string
     use RandomEnumTrait;
 
     case Cheerful = '快活';
-    case Ironic = '皮肉屋';
+    case Cynical = '皮肉屋';
     case Noble = '高貴';
     case Roughly = '粗野';
 }
