@@ -10,15 +10,11 @@ class Article extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['title', 'content', 'locale', 'llm_name'];
+
     public function author()
     {
         return $this->belongsTo(Author::class);
     }
-
-    public function attributes()
-    {
-        return $this->belongsToMany(Attribute::class);
-    }
-
     
 }

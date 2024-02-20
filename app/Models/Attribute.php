@@ -9,9 +9,11 @@ class Attribute extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'type'];
+
     public function authors()
     {
-        return $this->belongsToMany(author::class);
+        return $this->belongsToMany(Author::class);
     }
 
 }
