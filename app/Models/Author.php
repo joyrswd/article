@@ -10,8 +10,15 @@ class Author extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = ['name'];
+
     public function articles()
     {
-        $this->hasMany(Article::class);
+        return $this->hasMany(Article::class);
+    }
+
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class);
     }
 }
