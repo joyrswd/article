@@ -61,4 +61,20 @@ class OpenAiRepository
             "content" => $message,
         ];
     }
+
+    /**
+     * 結果から内容を返す
+     */
+    public function getContent(array $response) :string
+    {
+        return $response['choices'][0]['message']['content'];
+    }
+
+    /**
+     * モデル名を返す
+     */
+    public function getModel() : string
+    {
+        return $this->model;
+    }
 }
