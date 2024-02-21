@@ -6,7 +6,7 @@ namespace App\Enums;
 
 enum OpenAiRoleEnum: string
 {
-    case User = 'user';
     case System = 'system';
+    case User = 'user';
     case Assistant = 'assistant';
 }
