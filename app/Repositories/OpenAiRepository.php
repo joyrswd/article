@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Enums\OpenAiRoleEnum;
+use App\Interfaces\LlmRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenAiRepository
+class OpenAiRepository implements LlmRepositoryInterface
 {
     private string $secret;
     private string $endpoint;
@@ -17,12 +17,13 @@ class OpenAiRepository
 
     private array $messages = [];
 
-    public function __construct(string $secret, string $endpoint, string $model, ?int $timeout = 60)
+    public function __construct()
     {
-        $this->secret = $secret;
-        $this->endpoint = $endpoint;
-        $this->model = $model;
-        $this->timeout = $timeout;
+        $config = config('llm.ai.openai');
+        $this->secret = $config['secret'];
+        $this->endpoint = $config['endpoint'];
+        $this->model = $config['model'];
+        $this->timeout = $config['timeout'];
     }
 
     /**
@@ -54,7 +55,7 @@ class OpenAiRepository
     /**
      * メッセージを設定する
      */
-    public function setMessage(string $message, ?OpenAiRoleEnum $role=OpenAiRoleEnum::User)
+    public function setMessage(string $message, ?string $role=null)
     {
         $this->messages[] = [
             "role" => $role,

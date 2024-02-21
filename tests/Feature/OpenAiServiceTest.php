@@ -59,9 +59,7 @@ MESSAGE;
         $repository->shouldReceive('excute')->andReturn([true]);
         $repository->shouldReceive('getContent')
             ->andReturn('articleテスト');
-        $class = new OpenAiService($repository);
-        $date = new \DateTime();
-        $result = $class->makeArticle('著者', new DateTime('2021-05-01'));
+        $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
     
@@ -75,8 +73,7 @@ MESSAGE;
         $repository->shouldReceive('excute')->andReturn([true]);
         $repository->shouldReceive('getContent')
             ->andReturn('titleテスト');
-        $class = new OpenAiService($repository);
-        $result = $class->makeTitle('文章');
+        $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository), '文章');
         $this->assertEquals('titleテスト', $result);
     }    
     

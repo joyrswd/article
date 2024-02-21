@@ -15,9 +15,9 @@ class OpenAiRepositoryTest extends FeatureTestCase
     public function setMessage_正常(): void
     {
         $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
-        $repository->setMessage('テスト');
+        $repository->setMessage('テスト', OpenAiRoleEnum::User->value);
         $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['role' => OpenAiRoleEnum::User, 'content' => 'テスト']], $messages);
+        $this->assertEquals([['role' => OpenAiRoleEnum::User->value, 'content' => 'テスト']], $messages);
     }
 
     /**
@@ -26,9 +26,9 @@ class OpenAiRepositoryTest extends FeatureTestCase
     public function setMessage_system_正常(): void
     {
         $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
-        $repository->setMessage('テストsystem', OpenAiRoleEnum::System);
+        $repository->setMessage('テストsystem', OpenAiRoleEnum::System->value);
         $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['role' => OpenAiRoleEnum::System, 'content' => 'テストsystem']], $messages);
+        $this->assertEquals([['role' => OpenAiRoleEnum::System->value, 'content' => 'テストsystem']], $messages);
     }
 
     /**
