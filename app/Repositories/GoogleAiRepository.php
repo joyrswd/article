@@ -5,25 +5,22 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Interfaces\LlmRepositoryInterface;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenAiRepository implements LlmRepositoryInterface
+class GoogleAiRepository implements LlmRepositoryInterface
 {
     private string $secret;
     private string $endpoint;
     private string $model;
     private int $timeout;
-    private $roles = [
-        'system' => 'system',
-        'user' => 'user',
-    ];
 
     private array $messages = [];
 
     public function __construct()
     {
-        $config = config('llm.ai.openai');
+        $config = config('llm.ai.google');
         $this->secret = $config['secret'];
         $this->endpoint = $config['endpoint'];
         $this->model = $config['model'];
@@ -41,19 +38,23 @@ class OpenAiRepository implements LlmRepositoryInterface
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->secret
+                'x-goog-api-key' => $this->secret
             ])->timeout($this->timeout)->post($this->endpoint, [
-                'model' => $this->model,
-                'messages' => $this->messages,
-                'presence_penalty' => 1,
-                'top_p' => 0,
+                'contents' => [
+                    "role" => 'user',
+                    "parts" => [$this->messages],
+                ]
             ]);
-        } catch (\Exception $e) {
+            $data = $response->json();
+            if (array_key_exists('error', $data)) {
+                throw new Exception(implode("\n", $data['error']));
+            }
+        } catch (Exception $e) {
             Log::error($e->getMessage());
             return [];
         }
         $this->messages = [];
-        return empty($response) ? [] : $response->json();
+        return $data;
     }
 
     /**
@@ -61,11 +62,7 @@ class OpenAiRepository implements LlmRepositoryInterface
      */
     public function setMessage(string $message, string $key)
     {
-        $role = $this->roles[$key]??$this->roles['system'];
-        $this->messages[] = [
-            "role" => $role,
-            "content" => $message,
-        ];
+        $this->messages[] = ['text' => $message];
     }
 
     /**
@@ -73,7 +70,7 @@ class OpenAiRepository implements LlmRepositoryInterface
      */
     public function getContent(array $response) :string
     {
-        return $response['choices'][0]['message']['content'];
+        return $response['candidates'][0]['content']['parts'][0]['text'];
     }
 
     /**

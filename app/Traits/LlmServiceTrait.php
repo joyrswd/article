@@ -32,7 +32,7 @@ trait LlmServiceTrait
     private function makeArticle(string $author, DateTime $date): string
     {
         $message = $this->makeSystemMessage($author, $date);
-        $this->repository->setMessage($message, $this->roles[0]??'');
+        $this->repository->setMessage($message, 'system');
         $response = $this->repository->excute();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
@@ -42,8 +42,9 @@ trait LlmServiceTrait
 
     private function makeTitle(string $article): string
     {
-        $this->repository->setMessage("次に入力される文章のタイトルを作ってください。", $this->roles[0]??'');
-        $this->repository->setMessage($article, $this->roles[1]??'');
+        $lang = $this->getLang();
+        $this->repository->setMessage("次に入力される文章のタイトルを{$lang}で作ってください。", 'system');
+        $this->repository->setMessage($article, 'user');
         $response = $this->repository->excute();
         return empty($response) ? '' : $this->repository->getContent($response);
     }
