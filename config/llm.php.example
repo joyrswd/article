@@ -8,6 +8,12 @@ return [
             'model' => '', // OpenAiのAPI言語モデル
             'timeout' => 60, // OpenAiのAPI通信接続時間（秒）
         ],
+        'google' => [
+            'secret' => '', // GoogleのAPIキー
+            'endpoint' => '', //  GoogleのAPIエンドポイント
+            'model' => '', // GoogleのAPI言語モデル(DBへの記録のみ、通信不使用)
+            'timeout' => 60, // GoogleのAPI通信接続時間（秒）
+        ]
     ],
     'condition' => [ //出力される記事の内容を制御する場合に追加（配列）
 

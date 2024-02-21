@@ -2,32 +2,33 @@
 
 namespace Tests\Feature;
 
-use App\Repositories\OpenAiRepository;
+use App\Repositories\GoogleAiRepository;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Assert;
 
-class OpenAiRepositoryTest extends FeatureTestCase
+class GoogleAiRepositoryTest extends FeatureTestCase
 {
     /**
      * @test
      */
     public function setMessage_正常(): void
     {
-        $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
+        $repository = new GoogleAiRepository('secret', 'endpoint', 'model', 60);
         $repository->setMessage('テスト', 'user');
         $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['role' => 'user', 'content' => 'テスト']], $messages);
+        $this->assertEquals([['text' => 'テスト']], $messages);
     }
 
     /**
      * @test
      */
-    public function setMessage_system_正常(): void
+    public function setMessage_複数_正常(): void
     {
-        $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
-        $repository->setMessage('テストsystem', 'system');
+        $repository = new GoogleAiRepository('secret', 'endpoint', 'model', 60);
+        $repository->setMessage('テスト1', 'system');
+        $repository->setMessage('テスト2', 'system');
         $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['role' => 'system', 'content' => 'テストsystem']], $messages);
+        $this->assertEquals([['text' => 'テスト1'], ['text' => 'テスト2']], $messages);
     }
 
     /**
@@ -56,12 +57,10 @@ class OpenAiRepositoryTest extends FeatureTestCase
                     };
                 }
             });
-        $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
+        $repository = new GoogleAiRepository('secret', 'endpoint', 'model', 60);
         $repository->setMessage('テスト', 'system');
         $result = $repository->excute();
         $this->assertIsArray($result);
     }
-
-
 
 }

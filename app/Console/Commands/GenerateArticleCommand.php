@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Services\OpenAiService;
+use App\Services\GoogleAiService;
 use App\Services\AttributeService;
 use App\Services\AuthorService;
 use App\Services\ArticleService;
@@ -45,7 +46,7 @@ class GenerateArticleCommand extends Command
     public function handle()
     {
         //App::setLocale('en');
-        $service = app(OpenAiService::class);
+        $service = app(GoogleAiService::class);//app(OpenAiService::class);
         $response = $service->makePost(new \DateTime());
         $this->save(...$response);
         //

@@ -6,13 +6,13 @@ namespace App\Services;
 
 use App\Interfaces\LlmServiceInterface;
 use App\Traits\LlmServiceTrait;
-use App\Repositories\OpenAiRepository;
+use App\Repositories\GoogleAiRepository;
 
-class OpenAiService implements LlmServiceInterface
+class GoogleAiService implements LlmServiceInterface
 {
     use LlmServiceTrait;
 
-    public function __construct(OpenAiRepository $repository)
+    public function __construct(GoogleAiRepository $repository)
     {
         $this->repository = $repository;
         $this->conditions = config('llm.condition');
