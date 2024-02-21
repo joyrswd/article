@@ -98,7 +98,6 @@ MESSAGE;
         $this->assertArrayHasKey('article', $result);
         $this->assertArrayHasKey('author', $result);
         $this->assertArrayHasKey('attributes', $result);
-        $this->assertArrayHasKey('locale', $result);
         $this->assertArrayHasKey('model', $result);
         $this->assertEquals('テスト', $result['title']);
         $this->assertEquals('テスト', $result['article']);

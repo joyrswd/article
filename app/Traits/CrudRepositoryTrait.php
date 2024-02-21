@@ -87,6 +87,13 @@ trait CrudRepositoryTrait
     public function find(array $params): array
     {
         $result = $this->model::with($this->relations)->where($params)->get();
-        return $result->toArray();
+        return empty($result) ? [] : $result->toArray();
     }
+
+    public function findOne(array $params): array
+    {
+        $result = $this->model::with($this->relations)->where($params)->get()->first();
+        return empty($result) ? [] : $result->toArray();
+    }
+
 }

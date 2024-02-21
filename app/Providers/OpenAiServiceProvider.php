@@ -5,7 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Services\OpenAiService;
 use App\Repositories\OpenAiRepository;
-use Exception;
 
 class OpenAiServiceProvider extends ServiceProvider
 {

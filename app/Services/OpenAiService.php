@@ -18,13 +18,11 @@ class OpenAiService
     private OpenAiRepository $repository;
     private array $attributes=[];
     private array $conditions = [];
-    private string $locale = '';
 
     public function __construct(OpenAiRepository $repository, ?array $conditions = [])
     {
         $this->repository = $repository;
         $this->conditions = $conditions;
-        $this->locale = App::currentLocale();
     }
 
     public function makePost(DateTime $date): array
@@ -33,9 +31,8 @@ class OpenAiService
         $article = $this->makeArticle($author, $date);
         $title = $this->makeTitle($article);
         $attributes = $this->attributes;
-        $locale = $this->locale;
         $model = $this->repository->getModel();
-        return compact('title', 'article', 'author', 'attributes', 'locale', 'model');
+        return compact('title', 'article', 'author', 'attributes', 'model');
     }
 
     public function makeArticle(string $author, DateTime $date): string
@@ -78,7 +75,7 @@ MESSAGE;
 
     private function getLang()
     {
-        switch($this->locale) {
+        switch(App::currentLocale()) {
             case 'en': return '英語';
             default : return '日本語';
         }
