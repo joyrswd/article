@@ -19,7 +19,7 @@ class GenerateArticleCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:article';
+    protected $signature = 'app:article {llm?} {locale?}';
 
     /**
      * The console command description.
@@ -45,11 +45,21 @@ class GenerateArticleCommand extends Command
      */
     public function handle()
     {
-        //App::setLocale('en');
-        $service = app(GoogleAiService::class);//app(OpenAiService::class);
+        //LLM設定
+        $llm = match($this->argument('locale')) {
+            'google' => GoogleAiService::class,
+            'openai' => OpenAiService::class,
+            default => OpenAiService::class,
+        };
+        //言語設定
+        $locale = $this->argument('locale');
+        if (in_array($locale,['ja','en'])) {
+            App::setLocale($locale);
+        }
+        //処理実行
+        $service = app($llm);
         $response = $service->makePost(new \DateTime());
         $this->save(...$response);
-        //
     }
 
     private function save(string $title, string $article, string $author, array $attributes, string $model):void
