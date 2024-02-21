@@ -5,9 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Laravel Vite React</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/scss/app.scss', 'resources/js/app.js'])
     </head>
     <body>
         <div id="app"></div>
+        <h1>Example heading <span class="badge bg-secondary">New</span></h1>
     </body>
 </html>
