@@ -16,7 +16,7 @@ final class AttributeAction extends Controller
         $this->service  = $service;
     }
 
-    public function __invoke(string $attr, Request $request)
+    public function __invoke(int $attr, Request $request)
     {
         $attribute = $this->service->findWithArticles($attr);
         $resource = new AttributeResoruce($attribute);

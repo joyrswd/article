@@ -32,8 +32,11 @@ export default {
         try {
             const response = await axios.post('/post/' + this.$route.params.id);
             this.post = response.data.data ?? {};
-        }
-        catch (error) {
+            document.title = document.querySelector('h1').textContent;
+            if (this.post?.title) {
+                document.title = this.post.title + ' - ' + document.title;
+            }
+        } catch (error) {
             console.error(error);
         }
     },

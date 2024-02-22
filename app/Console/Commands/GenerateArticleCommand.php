@@ -46,7 +46,7 @@ class GenerateArticleCommand extends Command
     public function handle()
     {
         //LLM設定
-        $llm = match($this->argument('locale')) {
+        $llm = match($this->argument('llm')) {
             'google' => GoogleAiService::class,
             'openai' => OpenAiService::class,
             default => OpenAiService::class,
