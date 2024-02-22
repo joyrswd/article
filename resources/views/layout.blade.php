@@ -9,12 +9,10 @@
     @yield('head')
 </head>
 <body>
-    <header>
-        <div class="bg-body-tertiary p-3 p-sm-5 mb-4">
-            <div class="container">
-                <h1 class="display-4"><a href="/" class="text-black-50 text-decoration-none">{{ config('app.name') }}</a></h1>
-                @yield('top')
-            </div>
+    <header class="bg-body-tertiary sticky-top shadow-sm">
+        <div class="container p-4">
+            <h1 class="display-4"><a href="/" class="text-black-50 text-decoration-none">{{ config('app.name') }}</a></h1>
+            @yield('top')
         </div>
     </header>
     @yield('middle')

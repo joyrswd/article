@@ -35,12 +35,18 @@ class ArticleService
 
     public function get(int $id) :array
     {
-        return $this->repository->read($id);
+        return $this->repository->findOne([
+            'id' => $id,
+            'locale' => App::currentLocale(),
+        ]);
     }
 
     public function getWithAttributes(int $id) :array
     {
         $article = $this->get($id);
+        if (empty($article)) {
+            return [];
+        }
         $author = $this->authorRepository->read($article['author_id']);
         $article['author']['attributes'] = $author['attributes'];
         return $article;
@@ -48,6 +54,7 @@ class ArticleService
 
     public function find(array $param, ?array $options = []) :array
     {
+        $param['locale'] = App::currentLocale();
         return $this->repository->find($param, $options);
     }
 

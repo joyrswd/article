@@ -16,11 +16,11 @@ class AttributeResoruce extends JsonResource
     {
         $array = [
             'id' => $this->resource['id'],
-            'name' => $this->resource['name'],
+            'name' => __($this->resource['name']),
             'type' => $this->resource['type'],
             "_links" => [
                 'self' => [
-                    'href' => route('attr.index', ['attr' => $this->resource['name']], false),
+                    'href' => route('attr.index', ['attr' => $this->resource['id']], false),
                 ],
             ],
         ];
