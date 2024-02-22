@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\AttributeRepository;
+use App\Repositories\ArticleRepository;
 
 class AttributeService
 {
 
     private AttributeRepository $repository;
+    private ArticleRepository $articleRepository;
 
-    public function __construct(AttributeRepository $repository)
+    public function __construct(AttributeRepository $repository, ArticleRepository $articleRepository)
     {
         $this->repository = $repository;
+        $this->articleRepository = $articleRepository;
     }
 
-    public function addOrFind(array $params) : array
+    public function addOrFind(array $params): array
     {
         $records = [];
         foreach ($params as $key => $value) {
@@ -28,5 +31,16 @@ class AttributeService
             $records[] = $record;
         }
         return $records;
+    }
+
+    public function findWithArticles(string $attr): array
+    {
+        $attribute = $this->repository->findOne(['name' => $attr]);
+        $ids = array_column($attribute['authors'], 'id');
+        $articles = $this->articleRepository->find(['author_id' => $ids]);
+        if (empty($articles) === false) {
+            $attribute['articles'] = $articles;
+        }
+        return $attribute;
     }
 }

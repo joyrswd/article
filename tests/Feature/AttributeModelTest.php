@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Author;
 use App\Models\Attribute;
+use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AttributeModelTest extends FeatureTestCase
@@ -57,6 +58,20 @@ class AttributeModelTest extends FeatureTestCase
         $model->authors()->attach([$author1->id, $author2->id]);
         $this->assertCount(2, $model->authors);
         $this->assertInstanceOf(Attribute::class, $model->authors->first()->attributes->first());
+    }
+
+    /**
+     * @test
+     */
+    public function articles()
+    {
+        $author = Author::factory()->create();
+        $article = Article::factory()->create(['author_id' => $author->id]);
+        $model = Attribute::factory()->create();
+        $model->authors()->attach([$author->id]);
+        dd($model->articles);
+        //$this->assertCount(1, $model->articles);
+        //$this->assertEquals($article->id, $model->articles->first()->id);
     }
 
 }

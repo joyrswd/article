@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class AuthorResoruceCollection extends ResourceCollection
+class AttributeResoruceCollection extends ResourceCollection
 {
 
     /**
@@ -17,8 +17,8 @@ class AuthorResoruceCollection extends ResourceCollection
     {
         return [
             '_embedded' => [
-                'users' => $this->resource->map(function ($row) {
-                    return new AuthorResoruce($row);
+                'attrs' => $this->resource->map(function ($row) {
+                    return new AttributeResoruce($row);
                 })->all()
             ]
         ];
