@@ -28,4 +28,14 @@ class AuthorService
         }
         return $record;
     }
+
+    public function get(int $id)
+    {
+        return $this->repository->read($id);
+    }
+
+    public function find(array $params)
+    {
+        return $this->repository->find($params);
+    }
 }

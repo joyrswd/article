@@ -29,4 +29,15 @@ class ArticleService
         ]);
         return $this->repository->read($id);
     }
+
+    public function get(int $id) :array
+    {
+        return $this->repository->read($id);
+    }
+
+    public function find(array $param) :array
+    {
+        return $this->repository->find($param);
+    }
+
 }

@@ -14,7 +14,7 @@ class AuthorRepository
     public function __construct(Author $model)
     {
         $this->model = $model;
-        $this->relations = ['attributes'];
+        $this->relations = ['attributes', 'articles'];
     }
 
 }
