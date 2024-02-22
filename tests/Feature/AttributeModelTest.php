@@ -60,18 +60,4 @@ class AttributeModelTest extends FeatureTestCase
         $this->assertInstanceOf(Attribute::class, $model->authors->first()->attributes->first());
     }
 
-    /**
-     * @test
-     */
-    public function articles()
-    {
-        $author = Author::factory()->create();
-        $article = Article::factory()->create(['author_id' => $author->id]);
-        $model = Attribute::factory()->create();
-        $model->authors()->attach([$author->id]);
-        dd($model->articles);
-        //$this->assertCount(1, $model->articles);
-        //$this->assertEquals($article->id, $model->articles->first()->id);
-    }
-
 }

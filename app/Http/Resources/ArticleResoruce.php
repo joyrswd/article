@@ -19,18 +19,19 @@ class ArticleResoruce extends JsonResource
             'id' => $this->resource['id'],
             'title' => $this->resource['title'],
             'content' => $this->resource['content'],
-            'date' => $dateTime->format('Y-m-d H:i:s'),
+            'llm_name' => $this->resource['llm_name'],
+            'date' => $dateTime->format('Y-m-d'),
             "_links" => [
                 'self' => [
-                    'href' => route('post.show', ['post' => $this->resource['id']]),
+                    'href' => route('post.show', ['post' => $this->resource['id']], false),
                 ],
                 'date' => [
-                    'href' => route('date.index', ['date' => $dateTime->format('Y-m-d')]),
+                    'href' => route('date.index', ['date' => $dateTime->format('Y-m-d')], false),
                 ]
             ],
         ];
         $embedded = [];
-        if (array_key_exists('author', $this->resource->resource)) {
+        if (array_key_exists('author', (array)$this->resource)) {
             $embedded['user'] = new AuthorResoruce($this->resource['author']);
         }
         if (empty($embedded) === false) {

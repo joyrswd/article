@@ -37,7 +37,7 @@ class AttributeService
     {
         $attribute = $this->repository->findOne(['name' => $attr]);
         $ids = array_column($attribute['authors'], 'id');
-        $articles = $this->articleRepository->find(['author_id' => $ids]);
+        $articles = $this->articleRepository->find([], ['whereIn' => ['author_id', $ids]]);
         if (empty($articles) === false) {
             $attribute['articles'] = $articles;
         }

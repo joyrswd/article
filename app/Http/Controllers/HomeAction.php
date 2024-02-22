@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Services\ArticleService;
-use App\Http\Resources\ArticleResoruce;
+use App\Http\Resources\ArticleResoruceCollection;
 use Illuminate\Http\Request;
 
-final class ArticleAction extends Controller
+final class HomeAction extends Controller
 {
 
     private ArticleService $service;
@@ -16,11 +16,10 @@ final class ArticleAction extends Controller
         $this->service  = $service;
     }
 
-    public function __invoke(int $post, Request $request)
+    public function __invoke(Request $request)
     {
-        $aticle = $this->service->getWithAttributes($post);
-        $resource = new ArticleResoruce($aticle);
+        $aticle = $this->service->find([], ['limit' => 10, 'orderBy' => ['created_at', 'desc']]);
+        $resource = new ArticleResoruceCollection($aticle);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
-    //
 }

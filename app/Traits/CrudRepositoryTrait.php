@@ -84,9 +84,13 @@ trait CrudRepositoryTrait
         }
     }
 
-    public function find(array $params): array
+    public function find(array $params, ?array $options = []): array
     {
-        $result = $this->model::with($this->relations)->where($params)->get();
+        $builder = $this->model::with($this->relations)->where($params);
+        foreach ($options as $key => $value) {
+            call_user_func_array([$builder, $key], (array)$value);
+        }
+        $result =$builder->get();
         return empty($result) ? [] : $result->toArray();
     }
 

@@ -20,7 +20,7 @@ class AttributeResoruce extends JsonResource
             'type' => $this->resource['type'],
             "_links" => [
                 'self' => [
-                    'href' => route('attr.index', ['attr' => $this->resource['id']]),
+                    'href' => route('attr.index', ['attr' => $this->resource['name']], false),
                 ],
             ],
         ];

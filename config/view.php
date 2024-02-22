@@ -33,4 +33,6 @@ return [
         realpath(storage_path('framework/views'))
     ),
 
+    'layout' => env('VIEW_LAYOUT', 'layout'),
+
 ];
