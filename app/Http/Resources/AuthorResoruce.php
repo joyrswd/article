@@ -19,7 +19,7 @@ class AuthorResoruce extends JsonResource
             'name' => $this->resource['name'],
             "_links" => [
                 'self' => [
-                    'href' => route('user.show', ['user' => $this->resource['id']]),
+                    'href' => route('user.show', ['user' => $this->resource['id']], false),
                 ],
             ],
         ];
@@ -28,7 +28,7 @@ class AuthorResoruce extends JsonResource
             $embedded['posts'] = new ArticleResoruceCollection($this->resource['articles']);
         }
         if (array_key_exists('attributes', (array)$this->resource) && empty($this->resource['attributes']) === false) {
-            $embedded['posts'] = new AttributeResoruceCollection($this->resource['attributes']);
+            $embedded['attrs'] = new AttributeResoruceCollection($this->resource['attributes']);
         }
         if (empty($embedded) === false) {
             $array["_embedded"] = $embedded;

@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/user/{user}/show', \App\Http\Controllers\AuthorAction::class)->name('user.show');
-Route::get('/post/{post}/show', \App\Http\Controllers\ArticleAction::class)->name('post.show');
-Route::get('/date/{date}', \App\Http\Controllers\ArticleDailyAction::class)->name('date.index');
-Route::get('/attr/{attr}', \App\Http\Controllers\AttributeAction::class)->name('attr.index');
+Route::post('/user/{user}', \App\Http\Controllers\AuthorAction::class)->name('user.show');
+Route::post('/home', \App\Http\Controllers\HomeAction::class)->name('home');
+Route::post('/post/{post}', \App\Http\Controllers\ArticleAction::class)->name('post.show');
+Route::post('/date/{date}', \App\Http\Controllers\ArticleDailyAction::class)->name('date.index');
+Route::post('/attr/{attr}', \App\Http\Controllers\AttributeAction::class)->name('attr.index');
+
+Route::get('/{any}', function(){return view(config('view.layout'));})->where('any', '.*');
+

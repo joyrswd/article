@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\ArticleRepository;
+use App\Repositories\AuthorRepository;
 use Illuminate\Support\Facades\App;
 
 class ArticleService
 {
 
     private ArticleRepository $repository;
+    private AuthorRepository $authorRepository;
 
-    public function __construct(ArticleRepository $repository)
+    public function __construct(ArticleRepository $repository, AuthorRepository $authorRepository)
     {
         $this->repository = $repository;
+        $this->authorRepository = $authorRepository;
     }
 
     public function add(int $authorId, string $title, string $content, string $llmName) : array
@@ -35,9 +38,17 @@ class ArticleService
         return $this->repository->read($id);
     }
 
-    public function find(array $param) :array
+    public function getWithAttributes(int $id) :array
     {
-        return $this->repository->find($param);
+        $article = $this->get($id);
+        $author = $this->authorRepository->read($article['author_id']);
+        $article['author']['attributes'] = $author['attributes'];
+        return $article;
+    }
+
+    public function find(array $param, ?array $options = []) :array
+    {
+        return $this->repository->find($param, $options);
     }
 
 }
