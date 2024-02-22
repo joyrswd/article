@@ -16,11 +16,6 @@ class ArticleResoruceCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            '_links' => [
-                'self' => [
-                    'href' => route('post.index')
-                ]
-            ],
             '_embedded' => [
                 'posts' => $this->resource->map(function ($row) {
                     return new ArticleResoruce($row);

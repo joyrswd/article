@@ -13,12 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/user/{user}/show', \App\Http\Controllers\AuthorAction::class)->name('user.show');
-Route::get('/user', \App\Http\Controllers\AuthorListAction::class)->name('user.index');
 Route::get('/post/{post}/show', \App\Http\Controllers\ArticleAction::class)->name('post.show');
-Route::get('/post', \App\Http\Controllers\ArticleListAction::class)->name('post.index');
 Route::get('/date/{date}', \App\Http\Controllers\ArticleDailyAction::class)->name('date.index');
+Route::get('/attr/{attr}', \App\Http\Controllers\AttributeAction::class)->name('attr.index');
