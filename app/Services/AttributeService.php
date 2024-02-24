@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Repositories\AttributeRepository;
 use App\Repositories\ArticleRepository;
-use Illuminate\Support\Facades\App;
 
 class AttributeService
 {
@@ -39,7 +38,7 @@ class AttributeService
         $attribute = $this->repository->findOne(['id' => $attr]);
         $ids = array_column($attribute['authors'], 'id');
         $articles = $this->articleRepository->find([
-            'locale' =>App::currentLocale()
+            'locale' =>app()->currentLocale()
         ], ['whereIn' => ['author_id', $ids]]);
         if (empty($articles) === false) {
             $attribute['articles'] = $articles;

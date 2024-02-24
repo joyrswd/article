@@ -9,8 +9,8 @@ use App\Services\GoogleAiService;
 use App\Services\AttributeService;
 use App\Services\AuthorService;
 use App\Services\ArticleService;
+use App\Services\RssService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\App;
 
 class GenerateArticleCommand extends Command
 {
@@ -31,13 +31,15 @@ class GenerateArticleCommand extends Command
     private AttributeService $attributeService;
     private AuthorService $authorService;
     private ArticleService $articleService;
+    private RssService $rssService;
 
-    public function __construct(AttributeService $attributeService, AuthorService $authorService, ArticleService $articleService)
+    public function __construct(AttributeService $attributeService, AuthorService $authorService, ArticleService $articleService, RssService $rssService)
     {
         parent::__construct();
         $this->attributeService = $attributeService;
         $this->authorService = $authorService;
         $this->articleService = $articleService;
+        $this->rssService = $rssService;
     }
 
     /**
@@ -54,12 +56,13 @@ class GenerateArticleCommand extends Command
         //言語設定
         $locale = $this->argument('locale');
         if (in_array($locale,['ja','en'])) {
-            App::setLocale($locale);
+            app()->setLocale($locale);
         }
         //処理実行
         $service = app($llm);
         $response = $service->makePost(new \DateTime());
         $this->save(...$response);
+        $this->updateRss();
     }
 
     private function save(string $title, string $article, string $author, array $attributes, string $model):void
@@ -67,5 +70,11 @@ class GenerateArticleCommand extends Command
         $attributeRows = $this->attributeService->addOrFind($attributes);
         $authorRow = $this->authorService->addOrFind($author, $attributeRows);
         $this->articleService->add($authorRow['id'], $title, $article, $model);
+    }
+
+    private function updateRss()
+    {
+        $aticles = $this->articleService->find([], ['limit' => 10, 'orderBy' => ['created_at', 'desc']]);
+        $this->rssService->fetchRss($aticles);
     }
 }

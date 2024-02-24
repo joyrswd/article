@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->currentLocale()) }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }}</title>
+    <title>{{ __('site.title') }}</title>
+    <meta name="description" content='{!! str_replace("\n", "", __("site.description"))!!}'>
+    <meta name="keywords" content="{{__('site.keywords')}}">
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
     @yield('head')
 </head>
