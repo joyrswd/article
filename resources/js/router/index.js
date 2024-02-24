@@ -7,6 +7,7 @@ const router = createRouter({
         { path: '/post/:id', component: () => import('../views/Post.vue'), name: 'post'},
         { path: '/date/:id', component: () => import('../views/Date.vue'), name: 'date'},
         { path: '/attr/:id', component: () => import('../views/Attr.vue'), name: 'attr'},
+        { path: '/:catchAll(.*)', component: () => import('../views/Notfound.vue'), name: '404'},
     ],
 });
 

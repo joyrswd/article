@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->currentLocale()) }}">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +17,9 @@
         </div>
     </header>
     @yield('middle')
+    @section('main')
     <main id="app"></main>
+    @show
     @yield('bottom')
 </body>
 </html>
