@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Services\GoogleAiService;
 use App\Repositories\GoogleAiRepository;
-use Illuminate\Support\Facades\App;
 use DateTime;
 use Mockery;
 
@@ -114,7 +113,7 @@ MESSAGE;
      */
     public function getlang_英語_正常() :void
     {
-        App::setLocale('en');
+        app()->setLocale('en');
         $result = $this->callPrivateMethod('getLang', app(GoogleAiService::class));
         $this->assertEquals('英語', $result);
     }

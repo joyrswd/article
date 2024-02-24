@@ -9,7 +9,6 @@ use App\Enums\AiGenreEnum;
 use App\Enums\AiAdjectiveEnum;
 use App\Enums\AiPersonalityEnum;
 use App\Enums\AiGenerationEnum;
-use Illuminate\Support\Facades\App;
 use DateTime;
 
 trait LlmServiceTrait
@@ -54,9 +53,9 @@ trait LlmServiceTrait
         $month = $date->format('n月');
         $lang = $this->getLang();
         $message = <<<MESSAGE
-あなたは{$author}です。
-{$month}にまつわる記事を{$lang}で書いてください。
-{$author}が書くような内容と文体にしてください。
+あなたは『{$author}』です。
+『{$author}』が書くような内容と文体で、『{$month}』に関する記事を作ってください。
+記事は必ず『{$lang}』で書いてください。
 MESSAGE;
         if (empty($this->conditions) === false) {
             $message .= "次のルールに従ってください。\n";
@@ -70,7 +69,7 @@ MESSAGE;
 
     private function getLang()
     {
-        switch(App::currentLocale()) {
+        switch(app()->currentLocale()) {
             case 'en': return '英語';
             default : return '日本語';
         }

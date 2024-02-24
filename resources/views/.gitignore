@@ -1,3 +1,4 @@
 *
 !.gitignore
 !layout.blade.php
+!rss.blade.php

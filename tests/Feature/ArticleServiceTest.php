@@ -4,9 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\ArticleService;
 use App\Models\Author;
-use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\App;
 
 class ArticleServiceTest extends FeatureTestCase
 {
@@ -28,7 +26,7 @@ class ArticleServiceTest extends FeatureTestCase
      */
     public function add_正常(): void
     {
-        $locale = App::currentLocale();
+        $locale = app()->currentLocale();
         $this->assertDatabaseMissing('articles', ['title' => 'テストタイトル']);
         $result = $this->service->add($this->author->id, 'テストタイトル', 'テスト本文', 'ai');
         $this->assertDatabaseHas('articles', [
@@ -51,7 +49,7 @@ class ArticleServiceTest extends FeatureTestCase
      */
     public function add_ロケール変更_正常(): void
     {
-        App::setLocale('en');
+        app()->setLocale('en');
         $this->assertDatabaseMissing('articles', ['title' => 'テストタイトル']);
         $result = $this->service->add($this->author->id, 'テストタイトル', 'テスト本文', 'ai');
         $this->assertDatabaseHas('articles', [

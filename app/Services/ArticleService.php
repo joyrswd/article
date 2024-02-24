@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Repositories\ArticleRepository;
 use App\Repositories\AuthorRepository;
-use Illuminate\Support\Facades\App;
 
 class ArticleService
 {
@@ -22,7 +21,7 @@ class ArticleService
 
     public function add(int $authorId, string $title, string $content, string $llmName) : array
     {
-        $locale = App::currentLocale();
+        $locale = app()->currentLocale();
         $id = $this->repository->create([
             'author_id' => $authorId,
             'title' => $title,
@@ -37,7 +36,7 @@ class ArticleService
     {
         return $this->repository->findOne([
             'id' => $id,
-            'locale' => App::currentLocale(),
+            'locale' => app()->currentLocale(),
         ]);
     }
 
@@ -54,7 +53,7 @@ class ArticleService
 
     public function find(array $param, ?array $options = []) :array
     {
-        $param['locale'] = App::currentLocale();
+        $param['locale'] = app()->currentLocale();
         return $this->repository->find($param, $options);
     }
 

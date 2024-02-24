@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+//app()->setLocale('en');
 Route::post('/user/{user}', \App\Http\Controllers\AuthorAction::class)->name('user.show');
 Route::post('/home', \App\Http\Controllers\HomeAction::class)->name('home');
 Route::post('/post/{post}', \App\Http\Controllers\ArticleAction::class)->name('post.show');

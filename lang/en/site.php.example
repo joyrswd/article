@@ -1,0 +1,10 @@
+<?php
+
+return [
+    'url' => config('app.url'),
+    'title' => config('app.name'),
+    'description' => <<<DESCRIPTION
+About this site...
+DESCRIPTION,
+    'keywords' => 'AI, LLM, blog, article,...'
+];
