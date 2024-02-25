@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-if ($lang = filter_input(INPUT_SERVER, 'LANG')) {
+if ($lang = filter_input(INPUT_SERVER, 'HTTP_LANG')) {
     app()->setLocale($lang);
 }
 Route::post('/user/{user}', \App\Http\Controllers\AuthorAction::class)->name('user.show');
