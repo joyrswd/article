@@ -54,7 +54,7 @@ class GoogleAiRepository implements LlmRepositoryInterface
             return [];
         }
         $this->messages = [];
-        return $data;
+        return empty($data['candidates']) ? [] : $data['candidates'];
     }
 
     /**
@@ -70,7 +70,7 @@ class GoogleAiRepository implements LlmRepositoryInterface
      */
     public function getContent(array $response) :string
     {
-        return $response['candidates'][0]['content']['parts'][0]['text'];
+        return empty($response) ? '' : $response[0]['content']['parts'][0]['text'];
     }
 
     /**

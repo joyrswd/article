@@ -41,9 +41,8 @@ class GoogleAiServiceTest extends FeatureTestCase
         $this->setPrivateProperty('conditions', [], $service);
         $result = $this->callPrivateMethod('makeSystemMessage', $service, $author, $date);
         $message = <<<MESSAGE
-あなたは元気な作者です。
-2月にまつわる記事を日本語で書いてください。
-元気な作者が書くような内容と文体にしてください。
+あなたは『日本語』を母語とする『元気な作者』です。
+『元気な作者』が書くような内容と文体で、『2月』に関する記事を『日本語』で書いてください。
 MESSAGE;
         $this->assertEquals($message, $result);
     }

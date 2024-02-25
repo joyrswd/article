@@ -39,11 +39,9 @@ class RssServiceTest extends FeatureTestCase
                 'llm_name' => 'test',
             ];
         }
-        $path = $this->getPrivateProperty('path', $this->service);
+        $path = $this->service->getFilePath();
         $path .= '.test';
-        $this->setPrivateProperty('path', $path, $this->service);
-
-        $this->service->fetchRss($articles);
+        $this->service->fetchRss($path, $articles);
         $this->assertFileExists($path);
         $xml = simplexml_load_file($path);
         $this->assertNotFalse($xml);
