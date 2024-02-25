@@ -1,5 +1,57 @@
 
-# AIブロガーサイト
+# AI-rticle
+
+## 概要
+
+AIを使用したブログ記事生成サイトです。  
+Laravel + Vue.jsで作成しています。
+
+https://ja.ai-rticle.site/  
+https://en.ai-rticle.site/
+
+## 特徴
+- gpt-3.5-turboとgemini-proの2種類のLLMを使用
+- 日本語と英語、2種類の記事生成に対応
+- レスポンシブデザインのSPA
+- LaravelとVue.jsはhal+jsonを介してAPI連携
+- RSS自動生成
+
+## システム構成  
+### 開発環境
+- Docker Desktop 4.12.0
+- Ubuntu 22.04.3 LTS（Windows 11 WSL上）
+- PHP 8.3.2
+    - Laravel 10.43.0
+        - Laravel Vite 1.0.1
+- NodeJs 18.19.0
+    - vite 5.1.3
+        - vitejs/plugin-vue 5.0.4
+    - vue-router 4.3.0
+    - bootstrap 5.3.3
+    - sass 1.71.1
+    - axios 1.6.7
+- MariaDB 11.2.2
+
+### 構成概要
+```mermaid
+graph LR
+
+subgraph LLM
+    Google
+    ~~~OpenAI
+end
+
+Batch(Laravel Console)
+DB[(MariaDB)]
+
+subgraph Web
+Front(Vue.js) --> API(Laravel API)
+end
+
+Batch <--> LLM
+Batch --> DB
+API --> DB
+```
 
 ## データベース
 
