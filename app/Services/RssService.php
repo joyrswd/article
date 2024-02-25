@@ -6,7 +6,7 @@ namespace App\Services;
 
 class RssService 
 {
-    private function getFilePath() : string
+    public function getFilePath() : string
     {
         $root = public_path();
         $dir = $root . '/rss';
@@ -20,9 +20,8 @@ class RssService
         return $path;
     }
 
-    public function fetchRss(array $items) : void
+    public function fetchRss(string $path, array $items) : void
     {
-        $path = $this->getFilePath();
         $atomLink = __('site.url') . str_replace(public_path() . '/', '', $path);
         $content = view('rss', ['atomLink' => $atomLink, 'items' => $items])->render();
         file_put_contents($path, $content);

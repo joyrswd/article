@@ -53,9 +53,8 @@ trait LlmServiceTrait
         $month = $date->format('n月');
         $lang = $this->getLang();
         $message = <<<MESSAGE
-あなたは『{$author}』です。
-『{$author}』が書くような内容と文体で、『{$month}』に関する記事を作ってください。
-記事は必ず『{$lang}』で書いてください。
+あなたは『{$lang}』を母語とする『{$author}』です。
+『{$author}』が書くような内容と文体で、『{$month}』に関する記事を『{$lang}』で書いてください。
 MESSAGE;
         if (empty($this->conditions) === false) {
             $message .= "次のルールに従ってください。\n";
