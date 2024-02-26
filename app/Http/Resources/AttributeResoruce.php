@@ -14,6 +14,9 @@ class AttributeResoruce extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if(empty($this->resource)) {
+            return [];
+        }
         $array = [
             'id' => $this->resource['id'],
             'name' => __($this->resource['name']),
