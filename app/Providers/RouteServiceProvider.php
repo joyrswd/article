@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\ArticleService;
+use App\Services\AttributeService;
+use App\Services\AuthorService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -36,5 +39,17 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+        // {post}記事が存在するかチェック
+        Route::bind('post', ArticleService::class);
+        // {attr}属性が存在するかチェック
+        Route::bind('attr', AttributeService::class);
+        // {user}著者が存在するかチェック
+        Route::bind('user', AuthorService::class);
+        // {date}日付が正しいかチェック
+        Route::bind('date', function($date){
+            $d = \DateTime::createFromFormat('Y-m-d', $date);
+            return ($d && $d->format('Y-m-d') === $date && $d < new \DateTime()) ? $date : abort(404);
+        });
+
     }
 }

@@ -16,6 +16,19 @@ class AuthorService
         $this->repository = $repository;
     }
 
+    /**
+     * {author}のバリデーションルール
+     * @see \App\Providers\RouteServiceProvider::boot()
+     */
+    public function bind(mixed $value): int
+    {
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+        if (is_int($int) && $this->get($int)) {
+            return $int;
+        }
+        abort(404, 'Not found.');
+    }
+
     public function addOrFind(string $name, ?array $attributes = []) : array
     {
         $record = $this->repository->findOne(['name' => $name]);

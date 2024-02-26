@@ -19,6 +19,19 @@ class AttributeService
         $this->articleRepository = $articleRepository;
     }
 
+    /**
+     * {attr}のバリデーションルール
+     * @see \App\Providers\RouteServiceProvider::boot()
+     */
+    public function bind(mixed $value): int
+    {
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+        if (is_int($int) && $this->repository->read($int)) {
+            return $int;
+        }
+        abort(404, 'Not found.');
+    }
+
     public function addOrFind(array $params): array
     {
         $records = [];
