@@ -10,9 +10,9 @@
 @foreach($items as $item)
         <item>
             <title>{{ $item['title'] }}</title>
-            <link>{{ route('post.show', ['post' => $item['id']]) }}</link>
-            <guid>{{ route('post.show', ['post' => $item['id']]) }}</guid>
-            <description><![CDATA[{!! mb_substr($item['content'], 0, 150) !!}]]></description>
+            <link>{{ substr(__('site.url'), 0, -1) . route('post.show', ['post' => $item['id']], false) }}</link>
+            <guid>{{ substr(__('site.url'), 0, -1) . route('post.show', ['post' => $item['id']], false) }}</guid>
+            <description>{!! mb_substr($item['content'], 0, 150) !!}</description>
             <pubDate>{{ gmdate("D, d M Y H:i:s T", strtotime($item['created_at'])) }}</pubDate>
             <category>{{ $item['llm_name'] }}</category>
         </item>
