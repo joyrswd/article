@@ -14,6 +14,9 @@ class ArticleResoruce extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if(empty($this->resource)) {
+            return [];
+        }
         $dateTime = new \DateTime($this->resource['created_at']);
         $array = [
             'id' => $this->resource['id'],
