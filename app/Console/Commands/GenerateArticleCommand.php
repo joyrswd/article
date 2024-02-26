@@ -74,7 +74,7 @@ class GenerateArticleCommand extends Command
 
     private function updateRss()
     {
-        $aticles = $this->articleService->find([], ['limit' => 10, 'orderBy' => ['created_at', 'desc']]);
+        $aticles = $this->articleService->find([], ['limit' => 10]);
         $path = $this->rssService->getFilePath();
         $this->rssService->fetchRss($path, $aticles);
     }

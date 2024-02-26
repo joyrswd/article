@@ -14,7 +14,7 @@ use DateTime;
 trait LlmServiceTrait
 {
     private LlmRepositoryInterface $repository;
-    private array $attributes=[];
+    private array $attributes = [];
     private array $conditions = [];
     private array $roles = [];
 
@@ -22,6 +22,9 @@ trait LlmServiceTrait
     {
         $author = $this->makeAuthor();
         $article = $this->makeArticle($author, $date);
+        if ($this->validateLang($article) === false) {
+            $article = $this->transrateArticle($article);
+        }
         $title = $this->makeTitle($article);
         $attributes = $this->attributes;
         $model = $this->repository->getModel();
@@ -54,7 +57,7 @@ trait LlmServiceTrait
         $lang = $this->getLang();
         $message = <<<MESSAGE
 あなたは『{$lang}』を母語とする『{$author}』です。
-『{$author}』が書くような内容と文体で、『{$month}』に関する記事を『{$lang}』で書いてください。
+『{$lang}』を母語とする『{$author}』が書くような内容と文体で、『{$month}』に関する記事を『{$lang}』で書いてください。
 MESSAGE;
         if (empty($this->conditions) === false) {
             $message .= "次のルールに従ってください。\n";
@@ -66,11 +69,31 @@ MESSAGE;
         return $message;
     }
 
-    private function getLang()
+    private function transrateArticle(string $article): string
     {
-        switch(app()->currentLocale()) {
-            case 'en': return '英語';
-            default : return '日本語';
+        $lang = $this->getLang();
+        $this->repository->setMessage("次に入力される文章を{$lang}にしてください。", 'system');
+        $this->repository->setMessage($article, 'user');
+        $response = $this->repository->excute();
+        return empty($response) ? '' : $this->repository->getContent($response);
+    }
+
+    private function getLang(): string
+    {
+        switch (app()->currentLocale()) {
+            case 'en':
+                return '英語';
+            default:
+                return '日本語';
+        }
+    }
+
+    private function validateLang(string $article): bool
+    {
+        if (app()->currentLocale() === 'ja') {
+            return true;
+        } else {
+            return empty(preg_match("/[ぁ-ん]+|[ァ-ヴー]+/u", $article));
         }
     }
 
@@ -84,7 +107,7 @@ MESSAGE;
         return "{$genre}大好きの{$adjective}で{$personality}な{$generation}";
     }
 
-    private function convert(string $text, string $author, string $month)
+    private function convert(string $text, string $author, string $month): string
     {
         $placeHolder = [
             '{author}' => $author,

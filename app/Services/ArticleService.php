@@ -54,6 +54,7 @@ class ArticleService
     public function find(array $param, ?array $options = []) :array
     {
         $param['locale'] = app()->currentLocale();
+        $options['orderBy'] = ['created_at', 'desc'];
         return $this->repository->find($param, $options);
     }
 

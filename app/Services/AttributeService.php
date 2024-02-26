@@ -39,7 +39,7 @@ class AttributeService
         $ids = array_column($attribute['authors'], 'id');
         $articles = $this->articleRepository->find([
             'locale' =>app()->currentLocale()
-        ], ['whereIn' => ['author_id', $ids]]);
+        ], ['whereIn' => ['author_id', $ids], 'orderBy' => ['created_at', 'desc']]);
         if (empty($articles) === false) {
             $attribute['articles'] = $articles;
         }

@@ -42,7 +42,7 @@ class OpenAiServiceTest extends FeatureTestCase
         $result = $this->callPrivateMethod('makeSystemMessage', $service, $author, $date);
         $message = <<<MESSAGE
 あなたは『日本語』を母語とする『元気な作者』です。
-『元気な作者』が書くような内容と文体で、『2月』に関する記事を『日本語』で書いてください。
+『日本語』を母語とする『元気な作者』が書くような内容と文体で、『2月』に関する記事を『日本語』で書いてください。
 MESSAGE;
         $this->assertEquals($message, $result);
     }
@@ -55,8 +55,7 @@ MESSAGE;
         $repository = Mockery::mock(OpenAiRepository::class);
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('excute')->andReturn([true]);
-        $repository->shouldReceive('getContent')
-            ->andReturn('articleテスト');
+        $repository->shouldReceive('getContent')->andReturn('articleテスト');
         $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
@@ -69,8 +68,7 @@ MESSAGE;
         $repository = Mockery::mock(OpenAiRepository::class);
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('excute')->andReturn([true]);
-        $repository->shouldReceive('getContent')
-            ->andReturn('titleテスト');
+        $repository->shouldReceive('getContent')->andReturn('titleテスト');
         $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository), '文章');
         $this->assertEquals('titleテスト', $result);
     }    
@@ -83,8 +81,7 @@ MESSAGE;
         $repository = Mockery::mock(OpenAiRepository::class);
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('excute')->andReturn([true]);
-        $repository->shouldReceive('getContent')
-            ->andReturn('テスト');
+        $repository->shouldReceive('getContent')->andReturn('テスト');
         $repository->shouldReceive('getModel')->andReturn('モデル');
         $class = new OpenAiService($repository);
         $date = new \DateTime();
@@ -116,5 +113,48 @@ MESSAGE;
         $result = $this->callPrivateMethod('getLang', app(OpenAiService::class));
         $this->assertEquals('英語', $result);
     }
+
+    /**
+     * @test
+     */
+    public function validateLang_正常() :void
+    {
+        $result = $this->callPrivateMethod('validateLang', app(OpenAiService::class), 'ああああ');
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @test
+     */
+    public function validateLang_英語_正常() :void
+    {
+        app()->setLocale('en');
+        $result = $this->callPrivateMethod('validateLang', app(OpenAiService::class), 'aaaa');
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @test
+     */
+    public function validateLang_英語_異常() :void
+    {
+        app()->setLocale('en');
+        $result = $this->callPrivateMethod('validateLang', app(OpenAiService::class), 'aaあaa');
+        $this->assertFalse($result);
+    }
+
+    /**
+     * @test
+     */
+    public function transrateArticle_正常(): void
+    {
+        $repository = Mockery::mock(OpenAiRepository::class);
+        $repository->shouldReceive('setMessage');
+        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('getContent')->andReturn('transrated');
+        $result = $this->callPrivateMethod('transrateArticle', new OpenAiService($repository), '文章');
+        $this->assertEquals('transrated', $result);
+    }    
     
+
 }

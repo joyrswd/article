@@ -5,8 +5,12 @@
     </div>
 </template>
 <script>
-document.title = 'Not found - ' + document.querySelector('h1').textContent;
 export default {
     name: 'Notfound',
+    async created() {
+        if(this.$route.name === '404') {
+            document.title = 'Not found - ' + document.querySelector('h1').textContent;
+        }
+    }
 };
 </script>
