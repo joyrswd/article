@@ -19,6 +19,19 @@ class ArticleService
         $this->authorRepository = $authorRepository;
     }
 
+    /**
+     * {post}のバリデーションルール
+     * @see \App\Providers\RouteServiceProvider::boot()
+     */
+    public function bind(mixed $value): int
+    {
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+        if (is_int($int) && $this->get($int)) {
+            return $int;
+        }
+        abort(404, 'Not found.');
+    }
+
     public function add(int $authorId, string $title, string $content, string $llmName) : array
     {
         $locale = app()->currentLocale();
