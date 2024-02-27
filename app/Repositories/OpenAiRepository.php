@@ -105,6 +105,22 @@ class OpenAiRepository implements LlmRepositoryInterface
     }
 
     /**
+     * 結果から画像のURLを返す
+     */
+    public function getImageUrl(array $response): string
+    {
+        return empty($response['data']) ? '' : $response['data'][0]['url'];
+    }
+
+    /**
+     * 結果から画像の説明文を返す
+     */
+    public function getImageDescription(array $response): string
+    {
+        return empty($response['data']) ? '' : $response['data'][0]['revised_prompt'];
+    }
+
+    /**
      * モデル名を返す
      */
     public function getModel(?string $type = '') : string
@@ -115,4 +131,13 @@ class OpenAiRepository implements LlmRepositoryInterface
             default => $this->textModel
         };
     }
+
+    /**
+     * イメージサイズを返す
+     */
+    public function getImageSize(): string
+    {
+        return $this->imageSize;
+    }
+
 }

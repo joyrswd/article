@@ -27,9 +27,24 @@ trait LlmServiceTrait
         }
         $title = $this->makeTitle($article);
         $attributes = $this->attributes;
-        $model = $this->repository->getModel();
+        $model = $this->repository->getModel('text');
         return compact('title', 'article', 'author', 'attributes', 'model');
     }
+
+    public function makeImage(string $article) : array
+    {
+        $prompt = "次の文章の挿絵を生成してください。挿絵に文字は使用しないでください。\n\n" . $article;
+        $response = $this->repository->makeImage($prompt);
+        if (empty($response)) {
+            return [];
+        }
+        $url = $this->repository->getImageUrl($response);
+        $description = $this->repository->getImageDescription($response);
+        $model = $this->repository->getModel('image');
+        $size = $this->repository->getImageSize();
+        return compact('url', 'description', 'size', 'model');
+    }
+
 
     private function makeArticle(string $author, DateTime $date): string
     {

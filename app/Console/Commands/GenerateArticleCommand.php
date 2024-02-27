@@ -11,6 +11,7 @@ use App\Services\AuthorService;
 use App\Services\ArticleService;
 use App\Services\RssService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class GenerateArticleCommand extends Command
 {
@@ -60,16 +61,60 @@ class GenerateArticleCommand extends Command
         }
         //処理実行
         $service = app($llm);
-        $response = $service->makePost(new \DateTime());
-        $this->save(...$response);
+        $textResponse = $service->makePost(new \DateTime());
+        $article = $this->saveArticle(...$textResponse);
+        $imageResponse = $service->makeImage($article['content']);
+        if (empty($imageResponse) === false) {
+            $this->addImage($article['id'], ...$imageResponse);
+        }
         $this->updateRss();
     }
 
-    private function save(string $title, string $article, string $author, array $attributes, string $model):void
+    private function saveArticle(string $title, string $article, string $author, array $attributes, string $model):array
     {
         $attributeRows = $this->attributeService->addOrFind($attributes);
         $authorRow = $this->authorService->addOrFind($author, $attributeRows);
-        $this->articleService->add($authorRow['id'], $title, $article, $model);
+        return $this->articleService->add($authorRow['id'], $title, $article, $model);
+    }
+
+    private function addImage(int $articleId, string $url, string $description, string $size, string $model):void
+    {
+        try {
+            $path = $this->putImage($url);
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage());
+            return ;
+        }
+        
+    }
+
+    private function putImage(string $url) : string
+    {
+        $image = file_get_contents($url);
+        if (empty($image)) {
+            new \Exception('ファイル取得失敗');
+        }
+        $finfo = new \finfo(FILEINFO_EXTENSION);
+        $extension = $finfo->buffer($image);
+        $dir = $this->setUpDirectory(['img', 'posts', date('Y'), date('m'), date('d')]);
+        $path = $dir . md5($url) . '.' . $extension;
+        if(file_put_contents($path, $image) ) {
+            return $path;
+        } else {
+            new \Exception('ファイル保存失敗');
+        }
+    }
+
+    private function setUpDirectory($dirs) 
+    {
+        $dir = public_path() . '/';
+        foreach($dirs as $name) {
+            $dir .= $name . '/';
+            if (is_dir($dir) === false) {
+                mkdir($dir);
+            }
+        }
+        return $dir;
     }
 
     private function updateRss()
