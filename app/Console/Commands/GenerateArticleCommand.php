@@ -9,6 +9,7 @@ use App\Services\GoogleAiService;
 use App\Services\AttributeService;
 use App\Services\AuthorService;
 use App\Services\ArticleService;
+use App\Services\ImageService;
 use App\Services\RssService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -32,14 +33,16 @@ class GenerateArticleCommand extends Command
     private AttributeService $attributeService;
     private AuthorService $authorService;
     private ArticleService $articleService;
+    private ImageService $imageService;
     private RssService $rssService;
 
-    public function __construct(AttributeService $attributeService, AuthorService $authorService, ArticleService $articleService, RssService $rssService)
+    public function __construct(AttributeService $attributeService, AuthorService $authorService, ArticleService $articleService, ImageService $imageService, RssService $rssService)
     {
         parent::__construct();
         $this->attributeService = $attributeService;
         $this->authorService = $authorService;
         $this->articleService = $articleService;
+        $this->imageService = $imageService;
         $this->rssService = $rssService;
     }
 
@@ -80,41 +83,11 @@ class GenerateArticleCommand extends Command
     private function addImage(int $articleId, string $url, string $description, string $size, string $model):void
     {
         try {
-            $path = $this->putImage($url);
+            $path = $this->imageService->put($url);
+            $this->imageService->add($articleId, $path, $description, $size, $model);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
-            return ;
         }
-        
-    }
-
-    private function putImage(string $url) : string
-    {
-        $image = file_get_contents($url);
-        if (empty($image)) {
-            new \Exception('ファイル取得失敗');
-        }
-        $finfo = new \finfo(FILEINFO_EXTENSION);
-        $extension = $finfo->buffer($image);
-        $dir = $this->setUpDirectory(['img', 'posts', date('Y'), date('m'), date('d')]);
-        $path = $dir . md5($url) . '.' . $extension;
-        if(file_put_contents($path, $image) ) {
-            return $path;
-        } else {
-            new \Exception('ファイル保存失敗');
-        }
-    }
-
-    private function setUpDirectory($dirs) 
-    {
-        $dir = public_path() . '/';
-        foreach($dirs as $name) {
-            $dir .= $name . '/';
-            if (is_dir($dir) === false) {
-                mkdir($dir);
-            }
-        }
-        return $dir;
     }
 
     private function updateRss()
