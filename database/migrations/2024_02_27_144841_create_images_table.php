@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id()->comment('画像ID');
-            $table->foreignId('article_id')->constrained()->cascadeOnDelete()->comment('記事ID');
+            $table->foreignId('article_id')->unique()->constrained()->cascadeOnDelete()->comment('記事ID');
             $table->string('path')->unique()->comment('画像保存先パス');
             $table->text('description')->comment('画像の説明テキスト');
             $table->string('size')->index()->comment('画像サイズ');
