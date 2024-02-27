@@ -18,4 +18,9 @@ class GoogleAiService implements LlmServiceInterface
         $this->conditions = config('llm.condition');
     }
 
+    public function makeImage(string $article): array
+    {
+        return [];
+    }
+
 }

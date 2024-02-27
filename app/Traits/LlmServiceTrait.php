@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Interfaces\LlmRepositoryInterface;
+use App\Interfaces\AiImageRepositoryInterface;
 use App\Enums\AiGenreEnum;
 use App\Enums\AiAdjectiveEnum;
 use App\Enums\AiPersonalityEnum;
@@ -13,7 +14,7 @@ use DateTime;
 
 trait LlmServiceTrait
 {
-    private LlmRepositoryInterface $repository;
+    private LlmRepositoryInterface|AiImageRepositoryInterface $repository;
     private array $attributes = [];
     private array $conditions = [];
     private array $roles = [];
@@ -30,21 +31,6 @@ trait LlmServiceTrait
         $model = $this->repository->getModel('text');
         return compact('title', 'article', 'author', 'attributes', 'model');
     }
-
-    public function makeImage(string $article) : array
-    {
-        $prompt = "次の文章の挿絵を生成してください。挿絵に文字は使用しないでください。\n\n" . $article;
-        $response = $this->repository->makeImage($prompt);
-        if (empty($response)) {
-            return [];
-        }
-        $url = $this->repository->getImageUrl($response);
-        $description = $this->repository->getImageDescription($response);
-        $model = $this->repository->getModel('image');
-        $size = $this->repository->getImageSize();
-        return compact('url', 'description', 'size', 'model');
-    }
-
 
     private function makeArticle(string $author, DateTime $date): string
     {
