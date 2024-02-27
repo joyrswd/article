@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Interfaces\LlmRepositoryInterface;
+use App\Interfaces\AiImageRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenAiRepository implements LlmRepositoryInterface
+class OpenAiRepository implements LlmRepositoryInterface, AiImageRepositoryInterface
 {
     private string $secret;
     private int $timeout;
@@ -62,6 +63,27 @@ class OpenAiRepository implements LlmRepositoryInterface
         return empty($response) ? [] : $response->json();
     }
 
+
+    /**
+     * メッセージを設定する
+     */
+    public function setMessage(string $message, string $key)
+    {
+        $role = $this->roles[$key]??$this->roles['system'];
+        $this->messages[] = [
+            "role" => $role,
+            "content" => $message,
+        ];
+    }
+
+    /**
+     * 結果から内容を返す
+     */
+    public function getContent(array $response) :string
+    {
+        return $response['choices'][0]['message']['content'];
+    }
+
     /**
      * ChatGPTのAPIを使って複数のメモから文書を生成する
      */
@@ -82,26 +104,6 @@ class OpenAiRepository implements LlmRepositoryInterface
             return [];
         }
         return empty($response) ? [] : $response->json();
-    }
-
-    /**
-     * メッセージを設定する
-     */
-    public function setMessage(string $message, string $key)
-    {
-        $role = $this->roles[$key]??$this->roles['system'];
-        $this->messages[] = [
-            "role" => $role,
-            "content" => $message,
-        ];
-    }
-
-    /**
-     * 結果から内容を返す
-     */
-    public function getContent(array $response) :string
-    {
-        return $response['choices'][0]['message']['content'];
     }
 
     /**
