@@ -7,7 +7,7 @@ use App\Models\Image;
 use App\Models\Article;
 use App\Models\Author;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use finfo;
 use Mockery;
 
@@ -55,10 +55,13 @@ class ImageServiceTest extends FeatureTestCase
      */
     public function put_正常(): void
     {
-        File::shouldReceive('get')->once()->andReturn('imageBinary');
-        File::shouldReceive('put')->once()->andReturnUsing(function($path, $content){
-            file_put_contents($path, $content);
-            return true;
+        Http::shouldReceive('withoutVerifying')->andReturn(new class{
+            public function get($url) {
+                return new class {
+                    public function successful(){return true;}
+                    public function body(){return 'imageBody';}
+                };
+            }
         });
         $finfoMock = Mockery::mock(finfo::class);
         $finfoMock->shouldReceive('buffer')->once()->andReturn('png');

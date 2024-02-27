@@ -6,34 +6,34 @@ namespace App\Services;
 
 use App\Repositories\ImageRepository;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use finfo;
 
 class ImageService
 {
 
     private ImageRepository $repository;
-    private File $file;
     private finfo $finfo;
     private array $dirs = ['img', 'posts'];
 
-    public function __construct(ImageRepository $repository, File $file, finfo $finfo)
+    public function __construct(ImageRepository $repository, finfo $finfo)
     {
         $this->repository = $repository;
-        $this->file = $file;
         $this->finfo = new $finfo(FILEINFO_EXTENSION);
         $this->dirs += [date('Y'), date('m'), date('g')];
     }
 
     public function put(string $url):string
     {
-        $image = $this->file::get($url);
-        if (empty($image)) {
+        $response = Http::withoutVerifying()->get($url);
+        if ($response->successful() === false) {
             new \Exception('ファイル取得失敗');
         }
+        $image = $response->body();
         $extension = $this->finfo->buffer($image);
         $dir = $this->setUpDirectory();
         $path = $dir . md5($url) . '.' . $extension;
-        if($this->file::put($path, $image) ) {
+        if(File::put($path, $image) ) {
             return $path;
         } else {
             new \Exception('ファイル保存失敗');
