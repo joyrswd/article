@@ -109,8 +109,6 @@ author ||--|{ attribute_author : ""
 | size | VARCHAR(255) | NOT NULL       |画像サイズ |
 | created_at | timestamp    | DEFAULT current_timestamp   | 作成日時     |
 | updated_at | timestamp    | DEFAULT NULL   | 更新日時     |
-| deleted_at | timestamp    | DEFAULT NULL   | 削除日時     |
-
 
 ### 属性: attributes
 | 列名       | データ型     | 制約           | 説明         |

@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Author;
 use App\Models\Attribute;
-use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AttributeModelTest extends FeatureTestCase
@@ -43,7 +42,7 @@ class AttributeModelTest extends FeatureTestCase
     public function 削除()
     {
         $model = Attribute::factory()->create();
-        $model->forceDelete();
+        $model->delete();
         $this->assertModelMissing($model);
     }
 
