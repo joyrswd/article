@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\Author;
+use App\Models\Image;
 use App\Repositories\ArticleRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -122,17 +123,45 @@ class ArticleRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function update_parent_正常() : void
+    public function create_with_image_正常() : void
     {
-        $newParent = Author::factory()->create();
-        $newData = $this->model->name . '更新';
-        $this->repository->update($this->model->id, [
-            'title' => $newData,
-            'author' => $newParent,
+        $id = $this->repository->create([
+            'author_id' => $this->parent->id,
+            'title' => '新規タイトル',
+            'content' => '新規本文',
+            'locale' => 'ja',
+            'llm_name' => 'ai',
+            'image' => [
+                'path' => 'new path',
+                'description' => 'new description',
+                'size' => 'new size',
+                'model_name' => 'new model_name',
+            ]
         ]);
-        $result = $this->repository->read($this->model->id);
-        $this->assertEquals($newData, $result['title']);
+        $result = $this->repository->read($id);
+        $this->assertEquals('new path', $result['image']['path']);
+        $this->assertEquals('new description', $result['image']['description']);
+        $this->assertEquals('new size', $result['image']['size']);
+        $this->assertEquals('new model_name', $result['image']['model_name']);
     }
 
+    /**
+     * @test
+     */
+    public function update_with_image_正常() : void
+    {
+        $image = Image::factory()->create(['article_id' => $this->model->id, 'path' => 'firstPath']);
+        $this->assertEquals('firstPath', $this->model->image->path);
+        $this->repository->update($this->model->id, [
+            'title' => '新規タイトル',
+            'image' => [ ['id' => $image->id],
+                        ['path' => 'Updated path']
+            ]
+        ]);
+        $result = $this->repository->read($this->model->id);
+        $this->assertEquals('新規タイトル', $result['title']);
+        $this->assertEquals($image->id, $result['image']['id']);
+        $this->assertEquals('Updated path', $result['image']['path']);
+    }
 
 }
