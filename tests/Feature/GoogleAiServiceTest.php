@@ -54,7 +54,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(GoogleAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('articleテスト');
         $result = $this->callPrivateMethod('makeArticle', new GoogleAiService($repository), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
@@ -67,7 +67,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(GoogleAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('titleテスト');
         $result = $this->callPrivateMethod('makeTitle', new GoogleAiService($repository), '文章');
         $this->assertEquals('titleテスト', $result);
@@ -80,7 +80,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(GoogleAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('テスト');
         $repository->shouldReceive('getModel')->andReturn('モデル');
         $class = new GoogleAiService($repository);
@@ -150,7 +150,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(GoogleAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('transrated');
         $result = $this->callPrivateMethod('transrateArticle', new GoogleAiService($repository), '文章');
         $this->assertEquals('transrated', $result);

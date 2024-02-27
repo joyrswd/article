@@ -58,7 +58,7 @@ class OpenAiRepositoryTest extends FeatureTestCase
             });
         $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
         $repository->setMessage('テスト', 'system');
-        $result = $repository->excute();
+        $result = $repository->makeText();
         $this->assertIsArray($result);
     }
 

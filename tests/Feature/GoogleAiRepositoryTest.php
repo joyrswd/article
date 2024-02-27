@@ -34,7 +34,7 @@ class GoogleAiRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function excute_正常(): void
+    public function makeText_正常(): void
     {
 
         Http::fake();
@@ -59,7 +59,7 @@ class GoogleAiRepositoryTest extends FeatureTestCase
             });
         $repository = new GoogleAiRepository('secret', 'endpoint', 'model', 60);
         $repository->setMessage('テスト', 'system');
-        $result = $repository->excute();
+        $result = $repository->makeText();
         $this->assertIsArray($result);
     }
 
