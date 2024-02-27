@@ -30,7 +30,7 @@ class GoogleAiRepository implements LlmRepositoryInterface
     /**
      * ChatGPTのAPIを使って複数のメモから文書を生成する
      */
-    public function excute(): array
+    public function makeText(): array
     {
         if (empty($this->messages)) {
             return [];

@@ -35,7 +35,7 @@ trait LlmServiceTrait
     {
         $message = $this->makeSystemMessage($author, $date);
         $this->repository->setMessage($message, 'system');
-        $response = $this->repository->excute();
+        $response = $this->repository->makeText();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
         }
@@ -47,7 +47,7 @@ trait LlmServiceTrait
         $lang = $this->getLang();
         $this->repository->setMessage("次に入力される文章のタイトルを{$lang}で作ってください。", 'system');
         $this->repository->setMessage($article, 'user');
-        $response = $this->repository->excute();
+        $response = $this->repository->makeText();
         return empty($response) ? '' : $this->repository->getContent($response);
     }
 
@@ -74,7 +74,7 @@ MESSAGE;
         $lang = $this->getLang();
         $this->repository->setMessage("次に入力される文章を{$lang}にしてください。", 'system');
         $this->repository->setMessage($article, 'user');
-        $response = $this->repository->excute();
+        $response = $this->repository->makeText();
         return empty($response) ? '' : $this->repository->getContent($response);
     }
 
