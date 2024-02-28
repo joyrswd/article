@@ -18,7 +18,7 @@ final class HomeAction extends Controller
 
     public function __invoke(Request $request)
     {
-        $aticle = $this->service->find([], ['limit' => 10]);
+        $aticle = $this->service->find([], ['limit' => 12]);
         $resource = new ArticleResoruceCollection($aticle);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }

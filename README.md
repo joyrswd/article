@@ -63,9 +63,11 @@ erDiagram
 article {}
 attribute {}
 author {}
+image {}
 attribute_author {}
 
 author ||--|{ article : ""
+article ||--|o image : ""
 attribute ||--|{ attribute_author : ""
 author ||--|{ attribute_author : ""
 
@@ -95,6 +97,18 @@ author ||--|{ attribute_author : ""
 | created_at | timestamp    | DEFAULT current_timestamp   | 作成日時     |
 | updated_at | timestamp    | DEFAULT NULL   | 更新日時     |
 | deleted_at | timestamp    | DEFAULT NULL   | 削除日時     |
+
+### 記事: images
+| 列名       | データ型     | 制約           | 説明         |
+|------------|--------------|----------------|--------------|
+| id         | INT          | PK             | 記事ID   |
+| article_id  | INT          | FK,NOT NULL       |著者ID        |
+| path | VARCHAR(255) | NOT NULL       |画像URLパス |
+| description| text |  NOT NULL       |画像の説明文 |
+| model_name   | VARCHAR(255) | NOT NULL       |生成モデル名 |
+| size | VARCHAR(255) | NOT NULL       |画像サイズ |
+| created_at | timestamp    | DEFAULT current_timestamp   | 作成日時     |
+| updated_at | timestamp    | DEFAULT NULL   | 更新日時     |
 
 ### 属性: attributes
 | 列名       | データ型     | 制約           | 説明         |

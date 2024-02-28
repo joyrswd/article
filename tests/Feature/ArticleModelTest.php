@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\Author;
+use App\Models\Image;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ArticleModelTest extends FeatureTestCase
@@ -86,6 +87,16 @@ class ArticleModelTest extends FeatureTestCase
     {
         $model = Article::factory()->create(['author_id' => $this->author->id]);
         $this->assertInstanceOf(Article::class, $model->author->articles->first());
+    }
+
+    /**
+     * @test
+     */
+    public function image()
+    {
+        $model = Article::factory()->create(['author_id' => $this->author->id]);
+        $image = Image::factory()->create(['article_id' => $model->id]);
+        $this->assertEquals($image->id, $model->image->id);
     }
 
 }

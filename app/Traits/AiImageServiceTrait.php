@@ -2,21 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Traits;
 
-use App\Interfaces\LlmServiceInterface;
-use App\Traits\LlmServiceTrait;
-use App\Repositories\OpenAiRepository;
+use App\Interfaces\AiImageRepositoryInterface;
 
-class OpenAiService implements LlmServiceInterface
+trait LlmServiceTrait
 {
-    use LlmServiceTrait;
-
-    public function __construct(OpenAiRepository $repository)
-    {
-        $this->repository = $repository;
-        $this->conditions = config('llm.condition');
-    }
+    private AiImageRepositoryInterface $repository;
 
     public function makeImage(string $article) : array
     {
@@ -31,4 +23,5 @@ class OpenAiService implements LlmServiceInterface
         $size = $this->repository->getImageSize();
         return compact('url', 'description', 'size', 'model');
     }
+
 }

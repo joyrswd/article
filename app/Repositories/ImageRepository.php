@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Models\Article;
+use App\Models\Image;
 use App\Traits\CrudRepositoryTrait;
 
-class ArticleRepository
+class ImageRepository
 {
     use CrudRepositoryTrait;
 
-    public function __construct(Article $model)
+    public function __construct(Image $model)
     {
         $this->model = $model;
-        $this->relations = ['author', 'image'];
+        $this->relations = ['article'];
     }
 
 }
