@@ -4,77 +4,64 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Interfaces\LlmRepositoryInterface;
+use App\Interfaces\AiImageRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenAiRepository implements LlmRepositoryInterface
+class OpenAiImageRepository implements AiImageRepositoryInterface
 {
     private string $secret;
     private int $timeout;
     private string $endpoint;
     private string $model;
-    private $roles = [
-        'system' => 'system',
-        'user' => 'user',
-    ];
-
-    private array $messages = [];
+    private string $size;
 
     public function __construct()
     {
         $config = config('llm.ai.openai');
         $this->secret = $config['secret'];
         $this->timeout = $config['timeout'];
-        $this->endpoint = $config['text']['endpoint'];
-        $this->model = $config['text']['model'];
+        $this->endpoint = $config['image']['endpoint'];
+        $this->model = $config['image']['model'];
+        $this->size = $config['image']['size'];
     }
 
     /**
      * ChatGPTのAPIを使って複数のメモから文書を生成する
      */
-    public function makeText(): array
+    public function makeImage($prompt): array
     {
-        if (empty($this->messages)) {
-            return [];
-        }
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->secret
             ])->timeout($this->timeout)->post($this->endpoint, [
                 'model' => $this->model,
-                'messages' => $this->messages,
-                'presence_penalty' => 1,
-                'top_p' => 0,
+                'prompt' => $prompt,
+                'n' => 1,
+                'size' => $this->size,
             ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return [];
         }
-        $this->messages = [];
         return empty($response) ? [] : $response->json();
     }
 
-
     /**
-     * メッセージを設定する
+     * 結果から画像のURLを返す
      */
-    public function setMessage(string $message, string $key)
+    public function getUrl(array $response): string
     {
-        $role = $this->roles[$key]??$this->roles['system'];
-        $this->messages[] = [
-            "role" => $role,
-            "content" => $message,
-        ];
+        return empty($response['data']) ? '' : $response['data'][0]['url'];
     }
 
     /**
-     * 結果から内容を返す
+     * 結果から画像の説明文を返す
      */
-    public function getContent(array $response) :string
+    public function getDescription(array $response): string
     {
-        return $response['choices'][0]['message']['content'];
+        return empty($response['data']) ? '' : $response['data'][0]['revised_prompt'];
     }
 
     /**
@@ -83,6 +70,14 @@ class OpenAiRepository implements LlmRepositoryInterface
     public function getModel() : string
     {
         return $this->model;
+    }
+
+    /**
+     * イメージサイズを返す
+     */
+    public function getSize(): string
+    {
+        return $this->size;
     }
 
 }
