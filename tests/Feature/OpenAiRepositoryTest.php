@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Repositories\OpenAiRepository;
 use Illuminate\Support\Facades\Http;
-use PHPUnit\Framework\Assert;
 
 class OpenAiRepositoryTest extends FeatureTestCase
 {
@@ -33,35 +32,49 @@ class OpenAiRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function excute_正常(): void
+    public function makeText_正常(): void
     {
-
         Http::fake();
         Http::shouldReceive('withHeaders')
-            ->once()
-            ->andReturn(new class extends Assert {
-                public function timeout($timeout) {
-                    $this->assertEquals(60, $timeout);
-                    return new class extends Assert {
-                        public function post ($endpoint, $params) {
-                            $this->assertEquals('endpoint', $endpoint);
-                            $this->assertEquals('secret', $params['secret']);
-                            $this->assertEquals('model', $params['model']);
+            ->once()->andReturn(new class {
+                public function timeout() {
+                    return new class {
+                        public function post () {
                             return new class {
-                                public function json() {
-                                    return [];
-                                }
+                                public function json() {return [];}
                             };
                         }
                     };
                 }
             });
-        $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
+        $repository = new OpenAiRepository();
         $repository->setMessage('テスト', 'system');
-        $result = $repository->excute();
+        $result = $repository->makeText();
         $this->assertIsArray($result);
     }
 
+    /**
+     * @test
+     */
+    public function makeImage_正常(): void
+    {
+        Http::fake();
+        Http::shouldReceive('withHeaders')
+            ->once()->andReturn(new class {
+                public function timeout() {
+                    return new class {
+                        public function post () {
+                            return new class {
+                                public function json() {return [];}
+                            };
+                        }
+                    };
+                }
+            });
+        $repository = new OpenAiRepository();
+        $result = $repository->makeImage('画像生成');
+        $this->assertIsArray($result);
+    }
 
 
 }

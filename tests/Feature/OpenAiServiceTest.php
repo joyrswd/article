@@ -54,7 +54,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(OpenAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('articleテスト');
         $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
@@ -67,7 +67,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(OpenAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('titleテスト');
         $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository), '文章');
         $this->assertEquals('titleテスト', $result);
@@ -80,7 +80,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(OpenAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('テスト');
         $repository->shouldReceive('getModel')->andReturn('モデル');
         $class = new OpenAiService($repository);
@@ -150,7 +150,7 @@ MESSAGE;
     {
         $repository = Mockery::mock(OpenAiRepository::class);
         $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('excute')->andReturn([true]);
+        $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('transrated');
         $result = $this->callPrivateMethod('transrateArticle', new OpenAiService($repository), '文章');
         $this->assertEquals('transrated', $result);

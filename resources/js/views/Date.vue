@@ -22,6 +22,7 @@ export default {
             const response = await axios.post('/date/' + this.$route.params.id);
             this.posts = response.data?.data??[];
             document.title = this.$route.params.id + ' - ' + document.querySelector('h1').textContent;
+            document.getElementById('dateSelector').value = this.$route.params.id;
         } catch (error) {
             console.error(error);
         }

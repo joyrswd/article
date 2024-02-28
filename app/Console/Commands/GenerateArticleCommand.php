@@ -9,8 +9,10 @@ use App\Services\GoogleAiService;
 use App\Services\AttributeService;
 use App\Services\AuthorService;
 use App\Services\ArticleService;
+use App\Services\ImageService;
 use App\Services\RssService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class GenerateArticleCommand extends Command
 {
@@ -31,14 +33,16 @@ class GenerateArticleCommand extends Command
     private AttributeService $attributeService;
     private AuthorService $authorService;
     private ArticleService $articleService;
+    private ImageService $imageService;
     private RssService $rssService;
 
-    public function __construct(AttributeService $attributeService, AuthorService $authorService, ArticleService $articleService, RssService $rssService)
+    public function __construct(AttributeService $attributeService, AuthorService $authorService, ArticleService $articleService, ImageService $imageService, RssService $rssService)
     {
         parent::__construct();
         $this->attributeService = $attributeService;
         $this->authorService = $authorService;
         $this->articleService = $articleService;
+        $this->imageService = $imageService;
         $this->rssService = $rssService;
     }
 
@@ -60,16 +64,30 @@ class GenerateArticleCommand extends Command
         }
         //処理実行
         $service = app($llm);
-        $response = $service->makePost(new \DateTime());
-        $this->save(...$response);
+        $textResponse = $service->makePost(new \DateTime());
+        $article = $this->saveArticle(...$textResponse);
+        $imageResponse = $service->makeImage($article['content']);
+        if (empty($imageResponse) === false) {
+            $this->addImage($article['id'], ...$imageResponse);
+        }
         $this->updateRss();
     }
 
-    private function save(string $title, string $article, string $author, array $attributes, string $model):void
+    private function saveArticle(string $title, string $article, string $author, array $attributes, string $model):array
     {
         $attributeRows = $this->attributeService->addOrFind($attributes);
         $authorRow = $this->authorService->addOrFind($author, $attributeRows);
-        $this->articleService->add($authorRow['id'], $title, $article, $model);
+        return $this->articleService->add($authorRow['id'], $title, $article, $model);
+    }
+
+    private function addImage(int $articleId, string $url, string $description, string $size, string $model):void
+    {
+        try {
+            $path = $this->imageService->put($url);
+            $this->imageService->add($articleId, $path, $description, $size, $model);
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage());
+        }
     }
 
     private function updateRss()

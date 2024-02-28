@@ -22,8 +22,8 @@ trait CrudRepositoryTrait
         foreach ($params as $key => $value) {
             if (in_array($key, $this->relations)) {
                 $relations[] = match(get_class($model->$key())) {
-                    HasOne::class => [$key, 'save', $value],
-                    HasMany::class => [$key, 'save', $value],
+                    HasOne::class => [$key, 'updateOrCreate', $value],
+                    HasMany::class => [$key, 'updateOrCreate', $value],
                     BelongsTo::class => [$key, 'associate', $value],
                     BelongsToMany::class => [$key, 'sync', collect($value)->pluck('id')],
                     default => null,
@@ -35,7 +35,8 @@ trait CrudRepositoryTrait
         $model->save();
         foreach (array_filter($relations) as $row) {
             list($relation, $method, $value) = $row;
-            $model->$relation()->$method($value);
+            $attr = (is_array($value) && array_values($value) === $value) ? $value : [$value];
+            call_user_func_array([$model->$relation(), $method], $attr);
         }
     }
 

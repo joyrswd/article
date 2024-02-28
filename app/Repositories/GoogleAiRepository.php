@@ -8,6 +8,7 @@ use App\Interfaces\LlmRepositoryInterface;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class GoogleAiRepository implements LlmRepositoryInterface
 {
@@ -30,7 +31,7 @@ class GoogleAiRepository implements LlmRepositoryInterface
     /**
      * ChatGPTのAPIを使って複数のメモから文書を生成する
      */
-    public function excute(): array
+    public function makeText(): array
     {
         if (empty($this->messages)) {
             return [];
@@ -49,12 +50,16 @@ class GoogleAiRepository implements LlmRepositoryInterface
             if (array_key_exists('error', $data)) {
                 throw new Exception(implode("\n", $data['error']));
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             Log::error($e->getMessage());
             return [];
         }
         $this->messages = [];
-        return empty($data['candidates']) ? [] : $data['candidates'];
+        if (empty($data['candidates']) ) {
+            Log::error(implode("\n", $data));
+            return [];
+        }
+        return $data['candidates'];
     }
 
     /**
