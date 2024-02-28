@@ -1,25 +1,34 @@
 <template>
     <div class="container mt-2">
         <div v-if="post.id">
-            <h2 class="my-5">{{ post.title }}</h2>
-            <article v-html="post.content.replace(/\n/g, '<br>')"></article>
-            <p class="my-5 overflow-hidden">
-                <time class="float-end mb-1"><router-link :to="`${post._links.date.href}`"
-                        class="link-info link-underline-opacity-25">{{ post.date }}</router-link></time>
-                <author class="me-2 mb-1 float-start"><em>{{ post.llm_name }}</em></author>
-                <span class="float-start">
-                    <template v-for="attr in post._embedded.user._embedded.attrs">
-                    <router-link :to="`${attr._links.self.href}`" class="badge btn btn-sm btn-info me-1"
-                        role="button">{{ attr.name }}</router-link>
-                    </template>
-                </span>
-            </p>
+            <div class="d-flex position-relative p-0">
+                <div v-if=post._links.image.href id="postImage" @click="modalImage">
+                    <img :src="post._links.image.href" alt="image">
+                </div>
+                <h2 class="align-self-center">{{ post.title }}</h2>
+            </div>
+            <div class="py-3">
+                <article v-html="post.content.replace(/\n/g, '<br>')"></article>
+                <p class="my-5 overflow-hidden">
+                    <time class="float-end mb-1"><router-link :to="`${post._links.date.href}`"
+                            class="link-info link-underline-opacity-25">{{ post.date }}</router-link></time>
+                    <author class="me-2 mb-1 float-start"><em>{{ post.llm_name }}</em></author>
+                    <span class="float-start">
+                        <template v-for="attr in post._embedded.user._embedded.attrs">
+                            <router-link :to="`${attr._links.self.href}`" class="badge btn btn-sm btn-info me-1"
+                                role="button">{{ attr.name }}</router-link>
+                        </template>
+                    </span>
+                </p>
+            </div>
         </div>
         <div class="text-center my-5" v-else>
             <h6>No posts found.</h6>
         </div>
         <p class="text-center"><router-link to="/" class="btn btn-outline-info">Home</router-link></p>
     </div>
+    <!-- Modal -->
+    <div id="modal" @click="closeModal"></div>
 </template>
 <script>
 import router from '../router';
@@ -27,7 +36,7 @@ import router from '../router';
 export default {
     data() {
         return {
-            post:{}
+            post: {}
         };
     },
     async created() {
@@ -40,6 +49,15 @@ export default {
             }
         } catch (error) {
             console.error(error);
+        }
+    },
+    methods:{
+        modalImage(e) {
+            const img = e.target.querySelector('img').cloneNode();
+            document.getElementById('modal').appendChild(img);
+        },
+        closeModal() {
+            document.getElementById('modal').innerHTML = '';
         }
     },
     components: { router }

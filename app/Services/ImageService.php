@@ -20,7 +20,7 @@ class ImageService
     {
         $this->repository = $repository;
         $this->finfo = new $finfo(FILEINFO_EXTENSION);
-        $this->dirs += [date('Y'), date('m'), date('g')];
+        $this->dirs = array_merge($this->dirs, [date('Y'), date('m'), date('d')]);
     }
 
     public function put(string $url):string

@@ -30,6 +30,9 @@ class ArticleResoruce extends JsonResource
                 ],
                 'date' => [
                     'href' => route('date.index', ['date' => $dateTime->format('Y-m-d')], false),
+                ],
+                'image' => [
+                    'href' => empty($this->resource['image']) ? '' : str_replace(public_path(), '', $this->resource['image']['path']),
                 ]
             ],
         ];
