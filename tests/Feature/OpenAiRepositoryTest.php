@@ -12,7 +12,7 @@ class OpenAiRepositoryTest extends FeatureTestCase
      */
     public function setMessage_正常(): void
     {
-        $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
+        $repository = new OpenAiRepository();
         $repository->setMessage('テスト', 'user');
         $messages = $this->getPrivateProperty('messages', $repository);
         $this->assertEquals([['role' => 'user', 'content' => 'テスト']], $messages);
@@ -23,7 +23,7 @@ class OpenAiRepositoryTest extends FeatureTestCase
      */
     public function setMessage_system_正常(): void
     {
-        $repository = new OpenAiRepository('secret', 'endpoint', 'model', 60);
+        $repository = new OpenAiRepository();
         $repository->setMessage('テストsystem', 'system');
         $messages = $this->getPrivateProperty('messages', $repository);
         $this->assertEquals([['role' => 'system', 'content' => 'テストsystem']], $messages);
@@ -52,29 +52,5 @@ class OpenAiRepositoryTest extends FeatureTestCase
         $result = $repository->makeText();
         $this->assertIsArray($result);
     }
-
-    /**
-     * @test
-     */
-    public function makeImage_正常(): void
-    {
-        Http::fake();
-        Http::shouldReceive('withHeaders')
-            ->once()->andReturn(new class {
-                public function timeout() {
-                    return new class {
-                        public function post () {
-                            return new class {
-                                public function json() {return [];}
-                            };
-                        }
-                    };
-                }
-            });
-        $repository = new OpenAiRepository();
-        $result = $repository->makeImage('画像生成');
-        $this->assertIsArray($result);
-    }
-
 
 }

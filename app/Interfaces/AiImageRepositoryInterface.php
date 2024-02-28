@@ -7,7 +7,8 @@ namespace App\Interfaces;
 interface AiImageRepositoryInterface
 {
     public function makeImage(string $message) : array;
-    public function getImageUrl(array $response) : string;
-    public function getImageDescription(array $response) : string;
-    public function getImageSize() : string;
+    public function getUrl(array $response) : string;
+    public function getDescription(array $response) : string;
+    public function getSize() : string;
+    public function getModel() : string;
 }
