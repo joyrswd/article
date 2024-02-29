@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\OpenAiService;
 use App\Repositories\OpenAiRepository;
+use App\Repositories\OpenAiImageRepository;
 use DateTime;
 use Mockery;
 
@@ -56,7 +57,8 @@ MESSAGE;
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('articleテスト');
-        $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository), '著者', new DateTime('2021-05-01'));
+        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
+        $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository, $imageRepository), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
     
@@ -69,7 +71,8 @@ MESSAGE;
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('titleテスト');
-        $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository), '文章');
+        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
+        $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository, $imageRepository), '文章');
         $this->assertEquals('titleテスト', $result);
     }    
     
@@ -83,7 +86,8 @@ MESSAGE;
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('テスト');
         $repository->shouldReceive('getModel')->andReturn('モデル');
-        $class = new OpenAiService($repository);
+        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
+        $class = new OpenAiService($repository, $imageRepository);
         $date = new \DateTime();
         $result = $class->makePost($date);
         $this->assertArrayHasKey('title', $result);
@@ -152,7 +156,8 @@ MESSAGE;
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('transrated');
-        $result = $this->callPrivateMethod('transrateArticle', new OpenAiService($repository), '文章');
+        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
+        $result = $this->callPrivateMethod('transrateArticle', new OpenAiService($repository, $imageRepository), '文章');
         $this->assertEquals('transrated', $result);
     }    
     
