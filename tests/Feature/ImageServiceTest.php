@@ -6,10 +6,8 @@ use App\Services\ImageService;
 use App\Models\Image;
 use App\Models\Article;
 use App\Models\Author;
+use App\Repositories\ImagickRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
-use finfo;
-use Mockery;
 
 class ImageServiceTest extends FeatureTestCase
 {
@@ -31,7 +29,7 @@ class ImageServiceTest extends FeatureTestCase
     {
         $path = $this->filepath;
         while(is_dir($path)) {
-            rmdir($path);
+            //rmdir($path);
             $path = dirname($path);
             if ($path === public_path())
             {
@@ -53,27 +51,6 @@ class ImageServiceTest extends FeatureTestCase
     /**
      * @test
      */
-    public function put_正常(): void
-    {
-        Http::shouldReceive('withoutVerifying')->andReturn(new class{
-            public function get($url) {
-                return new class {
-                    public function successful(){return true;}
-                    public function body(){return 'imageBody';}
-                };
-            }
-        });
-        $finfoMock = Mockery::mock(finfo::class);
-        $finfoMock->shouldReceive('buffer')->once()->andReturn('png');
-        $this->setPrivateProperty('finfo', $finfoMock, $this->service);
-        $path = $this->service->put('http://dummy.test');
-        $this->assertFileExists($path);
-        unlink($path);
-    }
-
-    /**
-     * @test
-     */
     public function add_正常(): void
     {
         $article = Article::factory()->create(['author_id' => Author::factory()->create()->id]);
@@ -86,5 +63,26 @@ class ImageServiceTest extends FeatureTestCase
             'model_name' => 'model_name',
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function put_正常(): void
+    {
+        $mock = mock(ImagickRepository::class);
+        $mock->shouldReceive('setRectImage')->once()->andReturn(1);
+        $mock->shouldReceive('setTextOnImage')->once();
+        $mock->shouldReceive('setImageByUrl')->once()->andReturn(2);
+        $mock->shouldReceive('minimize')->once();
+        $mock->shouldReceive('compositeOver')->once();
+        $mock->shouldReceive('save')->once();
+        $mock->shouldReceive('clear')->once();
+        $this->setPrivateProperty('imagickRepository', $mock, $this->service);
+        $url = 'http://test.com/example.png';
+        $path = $this->service->put($url, 'watermark');
+        $expected = '/var/www/article/public/tmp/test/20240101/' . md5($url) . '.png';
+        $this->assertEquals($expected, $path);
+    }
+
 
 }

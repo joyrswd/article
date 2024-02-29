@@ -5,45 +5,46 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\ImageRepository;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
-use finfo;
+use App\Repositories\ImagickRepository;
+use Imagick;
 
 class ImageService
 {
 
     private ImageRepository $repository;
-    private finfo $finfo;
+    private ImagickRepository $imagickRepository;
     private array $dirs = ['img', 'posts'];
 
-    public function __construct(ImageRepository $repository, finfo $finfo)
+    public function __construct(ImageRepository $repository, ImagickRepository $imagickRepository)
     {
         $this->repository = $repository;
-        $this->finfo = new $finfo(FILEINFO_EXTENSION);
+        $this->imagickRepository = $imagickRepository;
         $this->dirs = array_merge($this->dirs, [date('Y'), date('m'), date('d')]);
     }
 
-    public function put(string $url):string
+    public function put(string $url, string $watermark): string
     {
-        $response = Http::withoutVerifying()->get($url);
-        if ($response->successful() === false) {
-            new \Exception('ファイル取得失敗');
-        }
-        $image = $response->body();
-        $extension = $this->finfo->buffer($image);
+        $config = config('llm.watermark');
         $dir = $this->setUpDirectory();
-        $path = $dir . md5($url) . '.' . $extension;
-        if(File::put($path, $image) ) {
-            return $path;
-        } else {
-            new \Exception('ファイル保存失敗');
-        }
+        $path = $dir . md5($url) . '.png';
+        $watermarkId = $this->imagickRepository->setRectImage($config['width'], $config['height'], $config['background'], 'png');
+        $this->imagickRepository->setTextOnImage($watermarkId, $watermark, [
+            'font' => $config['font'],
+            'fillColor' => $config['color'],
+            'gravity' => Imagick::GRAVITY_CENTER,   
+        ]);
+        $urlImageId = $this->imagickRepository->setImageByUrl($url);
+        $this->imagickRepository->minimize($urlImageId, 512, 0);
+        $this->imagickRepository->compositeOver($urlImageId, $watermarkId);
+        $this->imagickRepository->save($urlImageId, $path);
+        $this->imagickRepository->clear();
+        return $path;
     }
 
-    private function setUpDirectory() 
+    private function setUpDirectory()
     {
         $dir = public_path() . '/';
-        foreach($this->dirs as $name) {
+        foreach ($this->dirs as $name) {
             $dir .= $name . '/';
             if (is_dir($dir) === false) {
                 mkdir($dir);
@@ -52,7 +53,7 @@ class ImageService
         return $dir;
     }
 
-    public function add(int $articleId, string $path, string $description, string $size, string $modelName) : array
+    public function add(int $articleId, string $path, string $description, string $size, string $modelName): array
     {
         $id = $this->repository->create([
             'article_id' => $articleId,
@@ -63,5 +64,4 @@ class ImageService
         ]);
         return $this->repository->read($id);
     }
-
 }
