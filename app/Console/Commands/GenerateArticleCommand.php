@@ -83,7 +83,7 @@ class GenerateArticleCommand extends Command
     private function addImage(int $articleId, string $url, string $description, string $size, string $model):void
     {
         try {
-            $path = $this->imageService->put($url);
+            $path = $this->imageService->put($url, '@' . __('site.title') . ' by ' . $model);
             $this->imageService->add($articleId, $path, $description, $size, $model);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
