@@ -13,15 +13,28 @@ class ImagickRepository
 
     private array $instances = [];
 
+    private Imagick $imagick;
+    private ImagickDraw $imagickDraw;
+
+    public function __construct(Imagick $imagick, ImagickDraw $imagickDraw)
+    {
+        $this->imagick = $imagick;
+        $this->imagickDraw = $imagickDraw;
+    }
+
     private function setImager(?string $file = '') : int
     {
-        $this->instances[] = empty($file) ? new Imagick() : new Imagick($file);
+        $imagick = clone $this->imagick;
+        if (empty($file) === false) {
+            $imagick->readImage($file);
+        }
+        $this->instances[] = $imagick;
         return (count($this->instances) - 1);
     }
 
     private function setDrawer(?array $params = []) : int
     {
-        $drawer = new ImagickDraw();
+        $drawer = clone $this->imagickDraw;
         foreach ($params as $key => $value) {
             $method = 'set' . ucfirst($key);
             if (method_exists($drawer, $method)) {
@@ -32,7 +45,7 @@ class ImagickRepository
         return (count($this->instances) - 1);
     }
 
-    private function getInstance(int $id)
+    private function getInstance(int $id) : Imagick|ImagickDraw
     {
         if ($this->instances[$id] instanceof Imagick === false
             && $this->instances[$id] instanceof ImagickDraw === false
@@ -42,7 +55,7 @@ class ImagickRepository
         return $this->instances[$id];
     }
 
-    public function setImageByUrl(string $url)
+    public function setImageByUrl(string $url): int
     {
         return $this->setImager($url);
     }
@@ -86,7 +99,7 @@ class ImagickRepository
         $imager->writeImage($path);
     }
 
-    public function clear (?int $id=null)
+    public function clear (?int $id=null):void
     {
         if(is_null($id)) {
             array_map([$this, __METHOD__], array_keys($this->instances));

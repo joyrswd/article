@@ -12,6 +12,7 @@ https://en.ai-rticle.site/
 ## 特徴
 - gpt-3.5-turboとgemini-proの2種類のLLMを使用
 - 日本語と英語、2種類の記事生成に対応
+- 記事の挿絵画像もAIが生成
 - レスポンシブデザインのSPA
 - LaravelとVue.jsはhal+jsonを介してAPI連携
 - RSS自動生成
@@ -37,8 +38,13 @@ https://en.ai-rticle.site/
 graph LR
 
 subgraph LLM
-    Google
-    ~~~OpenAI
+    subgraph Text
+        chatgpt
+        ~~~gemini
+    end
+    subgraph Image
+        dall-e
+    end
 end
 
 Batch(Laravel Console)
