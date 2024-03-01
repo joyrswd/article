@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Interfaces\LlmServiceInterface;
+use App\Interfaces\AiImageServiceInterface;
+use App\Interfaces\AiImageRepositoryInterface;
 use App\Traits\LlmServiceTrait;
 use App\Repositories\OpenAiRepository;
 use App\Repositories\OpenAiImageRepository;
 
-class OpenAiService implements LlmServiceInterface
+class OpenAiService implements LlmServiceInterface, AiImageServiceInterface
 {
     use LlmServiceTrait;
 
-    private OpenAiImageRepository $imageRepository;
+    private AiImageRepositoryInterface $imageRepository;
 
     public function __construct(OpenAiRepository $repository, OpenAiImageRepository $imageRepository)
     {
@@ -22,17 +24,20 @@ class OpenAiService implements LlmServiceInterface
         $this->conditions = config('llm.condition');
     }
 
-    public function makeImage(string $article) : array
+    public function makeImage(string $article) : string
     {
-        $prompt = "次の文章の挿絵を生成してください。挿絵に文字は使用しないでください。\n\n" . $article;
+        $prompt = ["次の文章の挿絵を生成してください。", $article];
         $response = $this->imageRepository->makeImage($prompt);
         if (empty($response)) {
-            return [];
+            return '';
         }
-        $url = $this->imageRepository->getUrl($response);
-        $description = $this->imageRepository->getDescription($response);
-        $model = $this->imageRepository->getModel();
-        $size = $this->imageRepository->getSize();
-        return compact('url', 'description', 'size', 'model');
+        return $this->imageRepository->getBinary($response);
     }
+
+    public function getImageModel() : string
+    {
+        return $this->imageRepository->getModel();
+    }
+
+
 }

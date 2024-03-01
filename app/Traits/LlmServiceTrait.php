@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Interfaces\LlmRepositoryInterface;
-use App\Interfaces\AiImageRepositoryInterface;
 use App\Enums\AiGenreEnum;
 use App\Enums\AiAdjectiveEnum;
 use App\Enums\AiPersonalityEnum;
@@ -14,7 +13,7 @@ use DateTime;
 
 trait LlmServiceTrait
 {
-    private LlmRepositoryInterface|AiImageRepositoryInterface $repository;
+    private LlmRepositoryInterface $repository;
     private array $attributes = [];
     private array $conditions = [];
     private array $roles = [];
