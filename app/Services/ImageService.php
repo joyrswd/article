@@ -47,7 +47,7 @@ class ImageService
         return $watermarkId;
     }
 
-    private function setUpDirectory()
+    private function setUpDirectory(): string
     {
         $dir = public_path() . '/';
         foreach ($this->dirs as $name) {
@@ -59,7 +59,7 @@ class ImageService
         return $dir;
     }
 
-    private function prepareImagePath(string $content)
+    private function prepareImagePath(string $content): string
     {
         $dir = $this->setUpDirectory();
         $fiename = md5($content) . '.png';

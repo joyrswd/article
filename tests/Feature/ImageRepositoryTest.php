@@ -42,14 +42,10 @@ class ImageRepositoryTest extends FeatureTestCase
         $id = $this->repository->create([
             'article_id' => $article->id,
             'path' => 'new path',
-            'description' => 'new description',
-            'size' => 'new size',
             'model_name' => 'new model_name',
         ]);
         $result = $this->repository->read($id);
         $this->assertEquals('new path', $result['path']);
-        $this->assertEquals('new description', $result['description']);
-        $this->assertEquals('new size', $result['size']);
         $this->assertEquals('new model_name', $result['model_name']);
     }
 
@@ -60,14 +56,10 @@ class ImageRepositoryTest extends FeatureTestCase
     {
         $this->repository->update($this->model->id, [
             'path' => 'update path',
-            'description' => 'update description',
-            'size' => 'update size',
             'model_name' => 'update model_name',
         ]);
         $result = $this->repository->read($this->model->id);
         $this->assertEquals('update path', $result['path']);
-        $this->assertEquals('update description', $result['description']);
-        $this->assertEquals('update size', $result['size']);
         $this->assertEquals('update model_name', $result['model_name']);
     }
 
