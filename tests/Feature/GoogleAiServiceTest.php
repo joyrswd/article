@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\GoogleAiService;
 use App\Repositories\GoogleAiRepository;
+use App\Repositories\StableDiffusionRepository;
 use DateTime;
 use Mockery;
 
@@ -56,7 +57,7 @@ MESSAGE;
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('articleテスト');
-        $result = $this->callPrivateMethod('makeArticle', new GoogleAiService($repository), '著者', new DateTime('2021-05-01'));
+        $result = $this->callPrivateMethod('makeArticle', new GoogleAiService($repository, app(StableDiffusionRepository::class)), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
     
@@ -69,7 +70,7 @@ MESSAGE;
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('titleテスト');
-        $result = $this->callPrivateMethod('makeTitle', new GoogleAiService($repository), '文章');
+        $result = $this->callPrivateMethod('makeTitle', new GoogleAiService($repository, app(StableDiffusionRepository::class)), '文章');
         $this->assertEquals('titleテスト', $result);
     }    
     
@@ -83,7 +84,7 @@ MESSAGE;
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('テスト');
         $repository->shouldReceive('getModel')->andReturn('モデル');
-        $class = new GoogleAiService($repository);
+        $class = new GoogleAiService($repository, app(StableDiffusionRepository::class));
         $date = new \DateTime();
         $result = $class->makePost($date);
         $this->assertArrayHasKey('title', $result);
@@ -152,7 +153,7 @@ MESSAGE;
         $repository->shouldReceive('setMessage');
         $repository->shouldReceive('makeText')->andReturn([true]);
         $repository->shouldReceive('getContent')->andReturn('transrated');
-        $result = $this->callPrivateMethod('transrateArticle', new GoogleAiService($repository), '文章');
+        $result = $this->callPrivateMethod('transrateArticle', new GoogleAiService($repository, app(StableDiffusionRepository::class)), '文章');
         $this->assertEquals('transrated', $result);
     }
 

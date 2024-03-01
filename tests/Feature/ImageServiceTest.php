@@ -29,7 +29,7 @@ class ImageServiceTest extends FeatureTestCase
     {
         $path = $this->filepath;
         while(is_dir($path)) {
-            //rmdir($path);
+            rmdir($path);
             $path = dirname($path);
             if ($path === public_path())
             {
@@ -51,15 +51,32 @@ class ImageServiceTest extends FeatureTestCase
     /**
      * @test
      */
+    public function prepareImagePath_正常(): void
+    {
+        $path = $this->callPrivateMethod('prepareImagePath', $this->service, '画像');
+        $expect = public_path() . '/tmp/test/20240101/' . md5('画像') . '.png';
+        $this->assertEquals($expect, $path);
+    }
+
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
+    public function setUpWatermark_正常(): void
+    {
+        $this->callPrivateMethod('setUpWatermark', $this->service, 'ウォーターマーク');
+    }
+
+    /**
+     * @test
+     */
     public function add_正常(): void
     {
         $article = Article::factory()->create(['author_id' => Author::factory()->create()->id]);
-        $this->service->add($article->id, 'path', 'description', 'size', 'model_name');
+        $this->service->add($article->id, 'path', 'model_name');
         $this->assertDatabaseHas('images', [
             'article_id' => $article->id,
             'path' => 'path',
-            'description' => 'description',
-            'size' => 'size',
             'model_name' => 'model_name',
         ]);
     }
@@ -69,20 +86,16 @@ class ImageServiceTest extends FeatureTestCase
      */
     public function put_正常(): void
     {
-        $mock = mock(ImagickRepository::class);
-        $mock->shouldReceive('setRectImage')->once()->andReturn(1);
-        $mock->shouldReceive('setTextOnImage')->once();
-        $mock->shouldReceive('setImageByUrl')->once()->andReturn(2);
+        $mock = mock(app(ImagickRepository::class))->makePartial();
+        $mock->shouldReceive('setBinaryImage')->once();
         $mock->shouldReceive('minimize')->once();
         $mock->shouldReceive('compositeOver')->once();
         $mock->shouldReceive('save')->once();
         $mock->shouldReceive('clear')->once();
         $this->setPrivateProperty('imagickRepository', $mock, $this->service);
-        $url = 'http://test.com/example.png';
-        $path = $this->service->put($url, 'watermark');
-        $expected = '/var/www/article/public/tmp/test/20240101/' . md5($url) . '.png';
+        $path = $this->service->put('binary', 'watermark');
+        $expected = public_path() . '/tmp/test/20240101/' . md5('binary') . '.png';
         $this->assertEquals($expected, $path);
     }
-
 
 }

@@ -34,27 +34,10 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
                     };
                 }
             });
-        $result = $this->repository->makeImage('画像生成');
+        $result = $this->repository->makeImage(['画像生成']);
         $this->assertIsArray($result);
     }
 
-    /**
-     * @test
-     */
-    public function getUrl_正常(): void
-    {
-        $result = $this->repository->getUrl(['data' => [['url' => 'http://example.com/']]]);
-        $this->assertEquals('http://example.com/', $result);
-    }
-
-    /**
-     * @test
-     */
-    public function getDescription_正常(): void
-    {
-        $result = $this->repository->getDescription(['data' => [['revised_prompt' => 'about this image...']]]);
-        $this->assertEquals('about this image...', $result);
-    }
 
     /**
      * @test
@@ -66,15 +49,6 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
         $this->assertEquals('test', $result);
     }
 
-    /**
-     * @test
-     */
-    public function getSize_正常(): void
-    {
-        $this->setPrivateProperty('size', 'test', $this->repository);
-        $result = $this->repository->getSize();
-        $this->assertEquals('test', $result);
-    }
 
 
 }
