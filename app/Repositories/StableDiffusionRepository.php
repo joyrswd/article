@@ -8,7 +8,7 @@ use App\Interfaces\AiImageRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenAiImageRepository implements AiImageRepositoryInterface
+class StableDiffusionRepository implements AiImageRepositoryInterface
 {
     private string $secret;
     private int $timeout;
@@ -17,11 +17,11 @@ class OpenAiImageRepository implements AiImageRepositoryInterface
 
     public function __construct()
     {
-        $config = config('llm.ai.openai');
+        $config = config('llm.ai.stability');
         $this->secret = $config['secret'];
         $this->timeout = $config['timeout'];
-        $this->endpoint = $config['image']['endpoint'];
-        $this->model = $config['image']['model'];
+        $this->endpoint = $config['endpoint'];
+        $this->model = $config['model'];
     }
 
     /**
@@ -29,18 +29,15 @@ class OpenAiImageRepository implements AiImageRepositoryInterface
      */
     public function makeImage(array $messages): array
     {
-        $prompt = implode("\n\n", $messages);
+        $prompt = array_map(function($message){return ['text' => $message];}, $messages);
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $this->secret
             ])->timeout($this->timeout)->post($this->endpoint, [
                 'model' => $this->model,
-                'prompt' => $prompt,
-                'n' => 1,
-                'quality' => 'standard',
-                'response_format' => 'b64_json',
-                'size' => '1024x1024',
+                'text_prompts' => $prompt,
+                "samples"=> 1,
             ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -54,7 +51,7 @@ class OpenAiImageRepository implements AiImageRepositoryInterface
      */
     public function getBinary(array $response): string
     {
-        return empty($response['data']) ? '' : base64_decode($response['data'][0]['b64_json']);
+        return empty($response['artifacts']) ? '' : base64_decode($response['artifacts'][0]['base64']);
     }
 
     /**

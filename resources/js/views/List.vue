@@ -1,6 +1,6 @@
 <template>
     <div class="row" v-if="items.length">
-        <div class="col-md-4 d-flex flex-column justify-content-between p-4 position-relative" v-for="item in items">
+        <div class="col-md-4 d-flex flex-column justify-content-between p-4 mb-4 position-relative" v-for="item in items">
             <div v-if=item._links.image.href class="backgroundImage">
                 <img :src="item._links.image.href" alt="image">
             </div>

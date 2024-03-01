@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Interfaces\AiImageRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class OpenAiImageRepository implements AiImageRepositoryInterface
+class DeepLRepository
 {
     private string $secret;
     private int $timeout;
@@ -17,30 +16,25 @@ class OpenAiImageRepository implements AiImageRepositoryInterface
 
     public function __construct()
     {
-        $config = config('llm.ai.openai');
+        $config = config('llm.ai.deepl');
         $this->secret = $config['secret'];
         $this->timeout = $config['timeout'];
-        $this->endpoint = $config['image']['endpoint'];
-        $this->model = $config['image']['model'];
+        $this->endpoint = $config['endpoint'];
+        $this->model = $config['model'];
     }
 
     /**
-     * ChatGPTのAPIを使って複数のメモから文書を生成する
+     * DeepLのAPIを使って翻訳を実行
      */
-    public function makeImage(array $messages): array
+    public function requestApi($text, $lang): array
     {
-        $prompt = implode("\n\n", $messages);
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->secret
+                'Authorization' => 'DeepL-Auth-Key ' . $this->secret
             ])->timeout($this->timeout)->post($this->endpoint, [
-                'model' => $this->model,
-                'prompt' => $prompt,
-                'n' => 1,
-                'quality' => 'standard',
-                'response_format' => 'b64_json',
-                'size' => '1024x1024',
+                'text' => [$text],
+                'target_lang' => $lang,
             ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -52,9 +46,9 @@ class OpenAiImageRepository implements AiImageRepositoryInterface
     /**
      * 結果から画像のURLを返す
      */
-    public function getBinary(array $response): string
+    public function getTranslation(array $response): string
     {
-        return empty($response['data']) ? '' : base64_decode($response['data'][0]['b64_json']);
+        return empty($response['translations']) ? '' : $response['translations'][0]['text'];
     }
 
     /**

@@ -56,7 +56,7 @@ class GoogleAiRepository implements LlmRepositoryInterface
         }
         $this->messages = [];
         if (empty($data['candidates']) ) {
-            Log::error(implode("\n", $data));
+            Log::error(print_r($data, true));
             return [];
         }
         return $data['candidates'];
