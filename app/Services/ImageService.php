@@ -40,7 +40,7 @@ class ImageService
         $watermarkId = $this->imagickRepository->setRectImage($config['width'], $config['height'], $config['background'], 'png');
         $this->imagickRepository->setTextOnImage($watermarkId, $text, [
             'font' => $config['font'],
-            'fontSize' => 9,
+            'fontSize' => $config['size'],
             'fillColor' => $config['color'],
             'gravity' => Imagick::GRAVITY_CENTER,   
         ]);

@@ -10,47 +10,47 @@ class OpenAiRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setMessage_正常(): void
+    public function setContent_正常(): void
     {
         $repository = new OpenAiRepository();
-        $repository->setMessage('テスト', 'user');
-        $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['role' => 'user', 'content' => 'テスト']], $messages);
+        $repository->setContent('テスト');
+        $content = $this->getPrivateProperty('content', $repository);
+        $this->assertEquals([['role' => 'user', 'content' => 'テスト']], $content['messages']);
     }
 
     /**
      * @test
      */
-    public function setMessage_system_正常(): void
-    {
-        $repository = new OpenAiRepository();
-        $repository->setMessage('テストsystem', 'system');
-        $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['role' => 'system', 'content' => 'テストsystem']], $messages);
-    }
-
-    /**
-     * @test
-     */
-    public function makeText_正常(): void
+    public function requestApi_正常(): void
     {
         Http::fake();
         Http::shouldReceive('withHeaders')
             ->once()->andReturn(new class {
-                public function timeout() {
+                public function timeout() {}
+                public function withToken() {}
+                public function post () {
                     return new class {
-                        public function post () {
-                            return new class {
-                                public function json() {return [];}
-                            };
-                        }
+                        public function json() {return [
+                            'choices' => [['message'=>['content' => 'レスポンス']]]
+                        ];}
                     };
                 }
             });
         $repository = new OpenAiRepository();
-        $repository->setMessage('テスト', 'system');
-        $result = $repository->makeText();
-        $this->assertIsArray($result);
+        $repository->setContent('テスト');
+        $result = $repository->requestApi();
+        $this->assertEquals('レスポンス', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function getModel_正常(): void
+    {
+        $repository = new OpenAiRepository();
+        $this->setPrivateProperty('model', 'test', $repository);
+        $result = $repository->getModel();
+        $this->assertEquals('test', $result);
     }
 
 }

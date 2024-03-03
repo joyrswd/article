@@ -11,49 +11,46 @@ class GoogleAiRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setMessage_正常(): void
+    public function setContent_正常(): void
     {
-        $repository = new GoogleAiRepository('secret', 'endpoint', 'model', 60);
-        $repository->setMessage('テスト', 'user');
-        $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['text' => 'テスト']], $messages);
+        $repository = new GoogleAiRepository();
+        $repository->setContent('テスト');
+        $content = $this->getPrivateProperty('content', $repository);
+        $this->assertEquals([['text' => 'テスト']], $content['contents']['parts']);
     }
 
     /**
      * @test
      */
-    public function setMessage_複数_正常(): void
+    public function requestApi_正常(): void
     {
-        $repository = new GoogleAiRepository('secret', 'endpoint', 'model', 60);
-        $repository->setMessage('テスト1', 'system');
-        $repository->setMessage('テスト2', 'system');
-        $messages = $this->getPrivateProperty('messages', $repository);
-        $this->assertEquals([['text' => 'テスト1'], ['text' => 'テスト2']], $messages);
-    }
-
-    /**
-     * @test
-     */
-    public function makeText_正常(): void
-    {
-
         Http::fake();
         Http::shouldReceive('withHeaders')
             ->once()->andReturn(new class {
-                public function timeout() {
+                public function timeout() {}
+                public function withToken() {}
+                public function post () {
                     return new class {
-                        public function post () {
-                            return new class {
-                                public function json() {return [];}
-                            };
-                        }
+                        public function json() {return [
+                            'candidates' => [['content'=>['parts' => [['text' => 'レスポンス']]]]]
+                        ];}
                     };
                 }
             });
         $repository = new GoogleAiRepository();
-        $repository->setMessage('テスト', 'system');
-        $result = $repository->makeText();
-        $this->assertIsArray($result);
+        $repository->setContent('テスト');
+        $result = $repository->requestApi();
+        $this->assertEquals('レスポンス', $result);
     }
 
+    /**
+     * @test
+     */
+    public function getModel_正常(): void
+    {
+        $repository = new GoogleAiRepository();
+        $this->setPrivateProperty('model', 'test', $repository);
+        $result = $repository->getModel();
+        $this->assertEquals('test', $result);
+    }
 }

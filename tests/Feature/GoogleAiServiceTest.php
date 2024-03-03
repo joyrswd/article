@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Services\GoogleAiService;
 use App\Repositories\GoogleAiRepository;
 use App\Repositories\StableDiffusionRepository;
+use App\Repositories\DeepLRepository;
 use DateTime;
 use Mockery;
 
@@ -53,23 +54,19 @@ MESSAGE;
      */
     public function makeArticle_正常(): void
     {
-        $repository = Mockery::mock(GoogleAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('articleテスト');
+        $repository = Mockery::mock(GoogleAiRepository::class)->makePartial();
+        $repository->shouldReceive('requestApi')->andReturn('articleテスト');
         $result = $this->callPrivateMethod('makeArticle', new GoogleAiService($repository, app(StableDiffusionRepository::class)), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
-    
+
     /**
      * @test
      */
     public function makeTitle_正常(): void
     {
-        $repository = Mockery::mock(GoogleAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('titleテスト');
+        $repository = Mockery::mock(GoogleAiRepository::class)->makePartial();
+        $repository->shouldReceive('requestApi')->andReturn('titleテスト');
         $result = $this->callPrivateMethod('makeTitle', new GoogleAiService($repository, app(StableDiffusionRepository::class)), '文章');
         $this->assertEquals('titleテスト', $result);
     }    
@@ -79,11 +76,9 @@ MESSAGE;
      */
     public function makePost_正常(): void
     {
-        $repository = Mockery::mock(GoogleAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('テスト');
-        $repository->shouldReceive('getModel')->andReturn('モデル');
+        $repository = Mockery::mock(GoogleAiRepository::class)->makePartial();
+        $repository->shouldReceive('requestApi')->andReturn('テスト');
+        $repository->shouldReceive('getModel')->andReturn('test');
         $class = new GoogleAiService($repository, app(StableDiffusionRepository::class));
         $date = new \DateTime();
         $result = $class->makePost($date);
@@ -149,11 +144,9 @@ MESSAGE;
      */
     public function transrateArticle_正常(): void
     {
-        $repository = Mockery::mock(GoogleAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('transrated');
-        $result = $this->callPrivateMethod('transrateArticle', new GoogleAiService($repository, app(StableDiffusionRepository::class)), '文章');
+        $translater = Mockery::mock(DeepLRepository::class)->makePartial();
+        $translater->shouldReceive('requestApi')->andReturn('transrated');
+        $result = $this->callPrivateMethod('translateArticle', app(GoogleAiService::class), '文章', $translater);
         $this->assertEquals('transrated', $result);
     }
 
