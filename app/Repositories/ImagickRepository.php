@@ -51,11 +51,6 @@ class ImagickRepository
         return $this->instances[$id];
     }
 
-    public function setImageByUrl(string $url): int
-    {
-        return $this->setImager($url);
-    }
-
     public function setBinaryImage(string $binary): int
     {
         $id = $this->setImager();

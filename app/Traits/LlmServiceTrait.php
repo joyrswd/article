@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
-use App\Interfaces\LlmRepositoryInterface;
+use App\Interfaces\ApiRepositoryInterface;
+use App\Repositories\DeepLRepository;
 use App\Enums\AiGenreEnum;
 use App\Enums\AiAdjectiveEnum;
 use App\Enums\AiPersonalityEnum;
@@ -13,7 +14,7 @@ use DateTime;
 
 trait LlmServiceTrait
 {
-    private LlmRepositoryInterface $repository;
+    private ApiRepositoryInterface $repository;
     private array $attributes = [];
     private array $conditions = [];
     private array $roles = [];
@@ -34,21 +35,21 @@ trait LlmServiceTrait
     private function makeArticle(string $author, DateTime $date): string
     {
         $message = $this->makeSystemMessage($author, $date);
-        $this->repository->setMessage($message, 'system');
-        $response = $this->repository->makeText();
+        $this->repository->setContent($message);
+        $response = $this->repository->requestApi();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
         }
-        return $this->repository->getContent($response);
+        return $response;
     }
 
     private function makeTitle(string $article): string
     {
         $lang = $this->getLang();
-        $this->repository->setMessage("次に入力される文章のタイトルを{$lang}で作ってください。", 'system');
-        $this->repository->setMessage($article, 'user');
-        $response = $this->repository->makeText();
-        return empty($response) ? '' : $this->repository->getContent($response);
+        $this->repository->setContent("次に入力される文章のタイトルを{$lang}で作ってください。");
+        $this->repository->setContent($article);
+        $response = $this->repository->requestApi();
+        return empty($response) ? '' : $response;
     }
 
     private function makeSystemMessage(string $author, DateTime $date): string
@@ -71,11 +72,11 @@ MESSAGE;
 
     private function transrateArticle(string $article): string
     {
-        $lang = $this->getLang();
-        $this->repository->setMessage("次に入力される文章を{$lang}にしてください。", 'system');
-        $this->repository->setMessage($article, 'user');
-        $response = $this->repository->makeText();
-        return empty($response) ? '' : $this->repository->getContent($response);
+        $translater = app(DeepLRepository::class);
+        $translater->setLang(app()->currentLocale());
+        $translater->setContent($article);
+        $response = $translater->requestApi();
+        return empty($response) ? '' : $response;
     }
 
     private function getLang(): string

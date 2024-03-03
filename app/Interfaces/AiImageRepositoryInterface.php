@@ -6,7 +6,5 @@ namespace App\Interfaces;
 
 interface AiImageRepositoryInterface
 {
-    public function makeImage(array $messages) : array;
-    public function getBinary(array $response) : string;
-    public function getModel() : string;
+    public function getImage() : string;
 }

@@ -4,59 +4,33 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-
-class DeepLRepository
+class DeepLRepository extends ApiRepository
 {
-    private string $secret;
-    private int $timeout;
-    private string $endpoint;
-    private string $model;
-
     public function __construct()
     {
-        $config = config('llm.ai.deepl');
-        $this->secret = $config['secret'];
-        $this->timeout = $config['timeout'];
-        $this->endpoint = $config['endpoint'];
-        $this->model = $config['model'];
+        parent::__construct(...config('llm.ai.deepl'));
+        $this->tokenType = 'DeepL-Auth-Key';
+        $this->dataGetter = 'translations.0.text';
+        $this->content['text'] = [];
+        $this->content['target_lang'] = app()->currentLocale();
     }
 
-    /**
-     * DeepLのAPIを使って翻訳を実行
-     */
-    public function requestApi($text, $lang): array
+    public function setContent(mixed $text):void
     {
-        try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Authorization' => 'DeepL-Auth-Key ' . $this->secret
-            ])->timeout($this->timeout)->post($this->endpoint, [
-                'text' => [$text],
-                'target_lang' => $lang,
-            ]);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return [];
+        $this->content['text'][] = $text;
+    }
+
+    public function setLang(string $lang)
+    {
+        $this->content['target_lang'] = strtoupper($lang);
+    }
+
+    protected function hasError(array $data): ?string
+    {
+        if (empty($data['translations'])) {
+            return 'データの取得に失敗しました。';
         }
-        return empty($response) ? [] : $response->json();
-    }
-
-    /**
-     * 結果から画像のURLを返す
-     */
-    public function getTranslation(array $response): string
-    {
-        return empty($response['translations']) ? '' : $response['translations'][0]['text'];
-    }
-
-    /**
-     * モデル名を返す
-     */
-    public function getModel() : string
-    {
-        return $this->model;
+        return null;
     }
 
 }
