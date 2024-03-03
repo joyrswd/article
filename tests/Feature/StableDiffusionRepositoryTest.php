@@ -2,18 +2,18 @@
 
 namespace Tests\Feature;
 
-use App\Repositories\OpenAiImageRepository;
+use App\Repositories\StableDiffusionRepository;
 use Illuminate\Support\Facades\Http;
 
-class OpenAiImageRepositoryTest extends FeatureTestCase
+class StableDiffusionRepositoryTest extends FeatureTestCase
 {
 
-    private OpenAiImageRepository $repository;
+    private StableDiffusionRepository $repository;
 
     public function setUp():void
     {
         parent::setUp();
-        $this->repository = new OpenAiImageRepository();
+        $this->repository = new StableDiffusionRepository();
     }
 
     /**
@@ -23,7 +23,7 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
     {
         $this->repository->setContent('テスト');
         $content = $this->getPrivateProperty('content', $this->repository);
-        $this->assertEquals('テスト', $content['prompt']);
+        $this->assertEquals([['text' => 'テスト']], $content['text_prompts']);
     }
 
     /**
@@ -39,7 +39,7 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
                 public function post () {
                     return new class {
                         public function json() {return [
-                            'data' => [['b64_json'=>'画像データ']]
+                            'artifacts' => [['base64'=>'画像データ']]
                         ];}
                     };
                 }
@@ -64,7 +64,7 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
      */
     public function getImage_正常(): void
     {
-        $repository = mock(OpenAiImageRepository::class)->makePartial();
+        $repository = mock(StableDiffusionRepository::class)->makePartial();
         $repository->shouldReceive('requestApi')->once()->andReturn(base64_encode('あああああ'));
         $result = $repository->getImage();
         $this->assertEquals('あああああ', $result);

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Services\OpenAiService;
 use App\Repositories\OpenAiRepository;
 use App\Repositories\OpenAiImageRepository;
+use App\Repositories\DeepLRepository;
 use DateTime;
 use Mockery;
 
@@ -53,12 +54,9 @@ MESSAGE;
      */
     public function makeArticle_正常(): void
     {
-        $repository = Mockery::mock(OpenAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('articleテスト');
-        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
-        $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository, $imageRepository), '著者', new DateTime('2021-05-01'));
+        $repository = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $repository->shouldReceive('requestApi')->andReturn('articleテスト');
+        $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository, app(OpenAiImageRepository::class)), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
     
@@ -67,29 +65,23 @@ MESSAGE;
      */
     public function makeTitle_正常(): void
     {
-        $repository = Mockery::mock(OpenAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('titleテスト');
-        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
-        $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository, $imageRepository), '文章');
+        $repository = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $repository->shouldReceive('requestApi')->andReturn('titleテスト');
+        $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository, app(OpenAiImageRepository::class)), '文章');
         $this->assertEquals('titleテスト', $result);
-    }    
+    }
     
     /**
      * @test
      */
     public function makePost_正常(): void
     {
-        $repository = Mockery::mock(OpenAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('テスト');
-        $repository->shouldReceive('getModel')->andReturn('モデル');
-        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
-        $class = new OpenAiService($repository, $imageRepository);
+        $repository = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $repository->shouldReceive('requestApi')->andReturn('テスト');
+        $repository->shouldReceive('getModel')->andReturn('test');
+        $service = new OpenAiService($repository, Mockery::mock(OpenAiImageRepository::class));
         $date = new \DateTime();
-        $result = $class->makePost($date);
+        $result = $service->makePost($date);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('article', $result);
         $this->assertArrayHasKey('author', $result);
@@ -150,15 +142,12 @@ MESSAGE;
     /**
      * @test
      */
-    public function transrateArticle_正常(): void
+    public function translateArticle_正常(): void
     {
-        $repository = Mockery::mock(OpenAiRepository::class);
-        $repository->shouldReceive('setMessage');
-        $repository->shouldReceive('makeText')->andReturn([true]);
-        $repository->shouldReceive('getContent')->andReturn('transrated');
-        $imageRepository = Mockery::mock(OpenAiImageRepository::class);
-        $result = $this->callPrivateMethod('transrateArticle', new OpenAiService($repository, $imageRepository), '文章');
-        $this->assertEquals('transrated', $result);
+        $translater = Mockery::mock(DeepLRepository::class)->makePartial();
+        $translater->shouldReceive('requestApi')->andReturn('article');
+        $result = $this->callPrivateMethod('translateArticle', app(OpenAiService::class), '文章', $translater);
+        $this->assertEquals('article', $result);
     }    
     
 

@@ -24,11 +24,11 @@ trait LlmServiceTrait
         $author = $this->makeAuthor();
         $article = $this->makeArticle($author, $date);
         if ($this->validateLang($article) === false) {
-            $article = $this->transrateArticle($article);
+            $article = $this->translateArticle($article, app(DeepLRepository::class));
         }
         $title = $this->makeTitle($article);
         $attributes = $this->attributes;
-        $model = $this->repository->getModel('text');
+        $model = $this->repository->getModel();
         return compact('title', 'article', 'author', 'attributes', 'model');
     }
 
@@ -46,7 +46,7 @@ trait LlmServiceTrait
     private function makeTitle(string $article): string
     {
         $lang = $this->getLang();
-        $this->repository->setContent("次に入力される文章のタイトルを{$lang}で作ってください。");
+        $this->repository->setContent("次に入力される文章の『タイトル』を『{$lang}』で作ってください。『タイトル』は100文字以内にしてください。");
         $this->repository->setContent($article);
         $response = $this->repository->requestApi();
         return empty($response) ? '' : $response;
@@ -70,9 +70,8 @@ MESSAGE;
         return $message;
     }
 
-    private function transrateArticle(string $article): string
+    private function translateArticle(string $article, DeepLRepository $translater): string
     {
-        $translater = app(DeepLRepository::class);
         $translater->setLang(app()->currentLocale());
         $translater->setContent($article);
         $response = $translater->requestApi();

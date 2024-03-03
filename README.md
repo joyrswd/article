@@ -3,7 +3,7 @@
 
 ## 概要
 
-AIを使用したブログ記事生成サイトです。  
+AIを駆使したブログ記事生成サイトです。  
 Laravel + Vue.jsで作成しています。
 
 https://ja.ai-rticle.site/  
@@ -12,7 +12,8 @@ https://en.ai-rticle.site/
 ## 特徴
 - gpt-3.5-turboとgemini-proの2種類のLLMを使用
 - 日本語と英語、2種類の記事生成に対応
-- 記事の挿絵画像もAIが生成
+- 翻訳にはDeepLのAPIを使用
+- dalleとStable Diffusionによる記事の挿絵画像生成
 - レスポンシブデザインのSPA
 - LaravelとVue.jsはhal+jsonを介してAPI連携
 - RSS自動生成
@@ -37,13 +38,17 @@ https://en.ai-rticle.site/
 ```mermaid
 graph LR
 
-subgraph LLM
+subgraph AI[AI API]
     subgraph Text
         chatgpt
         ~~~gemini
     end
+    subgraph Translate
+        DeepL
+    end
     subgraph Image
         dall-e
+        ~~~StableDiffusion
     end
 end
 
@@ -54,7 +59,7 @@ subgraph Web
 Front(Vue.js) --> API(Laravel API)
 end
 
-Batch <--> LLM
+Batch <--> AI
 Batch --> DB
 API --> DB
 ```
@@ -110,9 +115,7 @@ author ||--|{ attribute_author : ""
 | id         | INT          | PK             | 記事ID   |
 | article_id  | INT          | FK,NOT NULL       |著者ID        |
 | path | VARCHAR(255) | NOT NULL       |画像URLパス |
-| description| text |  NOT NULL       |画像の説明文 |
 | model_name   | VARCHAR(255) | NOT NULL       |生成モデル名 |
-| size | VARCHAR(255) | NOT NULL       |画像サイズ |
 | created_at | timestamp    | DEFAULT current_timestamp   | 作成日時     |
 | updated_at | timestamp    | DEFAULT NULL   | 更新日時     |
 
