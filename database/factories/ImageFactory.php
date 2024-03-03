@@ -18,8 +18,6 @@ class ImageFactory extends Factory
     {
         return [
             'path' => $this->faker->filePath(),
-            'description' => $this->faker->text,
-            'size' => $this->faker->word,
             'model_name' => $this->faker->word,
         ];
     }

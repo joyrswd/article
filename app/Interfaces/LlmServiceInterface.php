@@ -8,5 +8,4 @@ use DateTime;
 interface LlmServiceInterface
 {
     public function makePost(DateTime $date): array;
-    public function makeImage(string $article): array;
 }

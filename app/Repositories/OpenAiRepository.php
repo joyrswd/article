@@ -4,23 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Interfaces\LlmRepositoryInterface;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-
-class OpenAiRepository implements LlmRepositoryInterface
+class OpenAiRepository extends ApiRepository
 {
-    private string $secret;
-    private int $timeout;
-    private string $endpoint;
-    private string $model;
-    private $roles = [
-        'system' => 'system',
-        'user' => 'user',
-    ];
-
-    private array $messages = [];
-
     public function __construct()
     {
         $config = config('llm.ai.openai');
@@ -28,61 +13,26 @@ class OpenAiRepository implements LlmRepositoryInterface
         $this->timeout = $config['timeout'];
         $this->endpoint = $config['text']['endpoint'];
         $this->model = $config['text']['model'];
-    }
-
-    /**
-     * ChatGPTのAPIを使って複数のメモから文書を生成する
-     */
-    public function makeText(): array
-    {
-        if (empty($this->messages)) {
-            return [];
-        }
-        try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->secret
-            ])->timeout($this->timeout)->post($this->endpoint, [
-                'model' => $this->model,
-                'messages' => $this->messages,
-                'presence_penalty' => 1,
-                'top_p' => 0,
-            ]);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return [];
-        }
-        $this->messages = [];
-        return empty($response) ? [] : $response->json();
-    }
-
-
-    /**
-     * メッセージを設定する
-     */
-    public function setMessage(string $message, string $key)
-    {
-        $role = $this->roles[$key]??$this->roles['system'];
-        $this->messages[] = [
-            "role" => $role,
-            "content" => $message,
+        $this->content = [
+            'model' => $this->model,
+            'presence_penalty' => 1,
+            'top_p' => 0,
+            'messages' => [],
         ];
+        $this->dataGetter = 'choices.0.message.content';
     }
 
-    /**
-     * 結果から内容を返す
-     */
-    public function getContent(array $response) :string
+    public function setContent(mixed $content): void
     {
-        return $response['choices'][0]['message']['content'];
+        $this->content['messages'][] = ["role" => 'user', "content" => $content];
     }
 
-    /**
-     * モデル名を返す
-     */
-    public function getModel() : string
+    public function hasError($data) : ?string
     {
-        return $this->model;
+        if (array_key_exists('error', $data)) {
+            return implode("\n", $data['error']);
+        }
+        return null;
     }
 
 }

@@ -40,13 +40,9 @@ class ImageModelTest extends FeatureTestCase
         $model = Image::factory()->create(['article_id' => $this->article->id]);
         $model->update([
             'path' => 'Updated path',
-            'description' => 'Updated description',
-            'size' => 'Updated size',
             'model_name' => 'Updated model_name',
         ]);
         $this->assertEquals('Updated path', $model->path);
-        $this->assertEquals('Updated description', $model->description);
-        $this->assertEquals('Updated size', $model->size);
         $this->assertEquals('Updated model_name', $model->model_name);
     }
 
