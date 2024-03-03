@@ -2,18 +2,18 @@
 
 namespace Tests\Feature;
 
-use App\Repositories\OpenAiImageRepository;
+use App\Repositories\DeepLRepository;
 use Illuminate\Support\Facades\Http;
 
-class OpenAiImageRepositoryTest extends FeatureTestCase
+class DeepLRepositoryTest extends FeatureTestCase
 {
 
-    private OpenAiImageRepository $repository;
+    private DeepLRepository $repository;
 
     public function setUp():void
     {
         parent::setUp();
-        $this->repository = new OpenAiImageRepository();
+        $this->repository = new DeepLRepository();
     }
 
     /**
@@ -23,7 +23,7 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
     {
         $this->repository->setContent('テスト');
         $content = $this->getPrivateProperty('content', $this->repository);
-        $this->assertEquals('テスト', $content['prompt']);
+        $this->assertEquals(['テスト'], $content['text']);
     }
 
     /**
@@ -39,14 +39,24 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
                 public function post () {
                     return new class {
                         public function json() {return [
-                            'data' => [['b64_json'=>'画像データ']]
+                            'translations' => [['text'=>'レスポンス']]
                         ];}
                     };
                 }
             });
-        $this->repository->setContent('画像生成');
+        $this->repository->setContent('翻訳テキスト');
         $result = $this->repository->requestApi();
-        $this->assertEquals('画像データ', $result);
+        $this->assertEquals('レスポンス', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function setLang_正常(): void
+    {
+        $this->repository->setLang('テスト');
+        $content = $this->getPrivateProperty('content', $this->repository);
+        $this->assertEquals('テスト', $content['target_lang']);
     }
 
     /**
@@ -58,17 +68,5 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
         $result = $this->repository->getModel();
         $this->assertEquals('test', $result);
     }
-
-    /**
-     * @test
-     */
-    public function getImage_正常(): void
-    {
-        $repository = mock(OpenAiImageRepository::class)->makePartial();
-        $repository->shouldReceive('requestApi')->once()->andReturn(base64_encode('あああああ'));
-        $result = $repository->getImage();
-        $this->assertEquals('あああああ', $result);
-    }
-
 
 }

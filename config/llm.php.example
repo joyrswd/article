@@ -4,7 +4,7 @@ return [
     'ai' => [
         'openai' => [
             'secret' => '', // OpenAiのAPIシークレット
-            'timeout' => 60, // OpenAiのAPI通信接続時間（秒）
+            'timeout' => 60, // API通信接続時間（秒）
             'text' => [
                 'endpoint' => '', // OpenAiのテキスト生成APIエンドポイント
                 'model' => '', // OpenAiのテキスト生成API言語モデル
@@ -12,22 +12,35 @@ return [
             'image' => [
                 'endpoint' => '', // OpenAiの画像生成APIエンドポイント
                 'model' => '', // OpenAiの画像生成API言語モデル
-                'size' => '', // OpenAiの画像生成サイズ
             ]
         ],
         'google' => [
             'secret' => '', // GoogleのAPIキー
+            'timeout' => 60, // API通信接続時間（秒）
             'endpoint' => '', //  GoogleのAPIエンドポイント
             'model' => '', // GoogleのAPI言語モデル(DBへの記録のみ、通信不使用)
-            'timeout' => 60, // GoogleのAPI通信接続時間（秒）
+        ],
+        'stability' => [
+            'secret' => '', // StableDiffusionのAPIキー
+            'timeout' => 90, // API通信接続時間（秒）
+            'endpoint' => "", // StableDiffusionのAPIエンドポイント
+            'model' => '', // StableDiffusionのAPIモデル(DBへの記録のみ、通信不使用)
+        ],
+        'deepl' => [
+            'secret' => '', // DeepLのAPIキー
+            'timeout' => 90, // API通信接続時間（秒）
+            'endpoint' => '', // DeepLのAPIエンドポイント
+            'model' => 'v2', // DeepLのAPIモデル(DBへの記録のみ、通信不使用)
         ]
+
     ],
     'watermark' => [// 生成される画像に付与するウォーターマークの設定
         'font' => '', // フォントファイルのパス
+        'size' => 9,  // フォントの大きさ
         'color' => 'white', // フォントの色
         'background' => 'rgba(0,0,0,0.5)',  // 背景色
         'width' => 200,  // 背景幅
-        'height' => 20,  // 背景高さ
+        'height' => 15,  // 背景高さ
     ],
     'condition' => [ //出力される記事の内容を制御する場合に追加（配列）
 

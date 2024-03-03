@@ -17,6 +17,7 @@ class ImagickRepositoryTest extends FeatureTestCase
         $imagick = mock(Imagick::class)->makePartial();
         $imagick->shouldReceive('readImage');
         $imagick->shouldReceive('annotateImage');
+        $imagick->shouldReceive('readImageBlob');
         $draw = mock(ImagickDraw::class);
         $this->repository = new ImagickRepository($imagick, $draw);
     }
@@ -72,9 +73,9 @@ class ImagickRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setImageByUrl_正常(): void
+    public function setBinaryImage_正常(): void
     {
-        $result = $this->repository->setImageByUrl('http://text.com/example.png');
+        $result = $this->repository->setBinaryImage("binary");
         $this->assertEquals(0, $result);
         $result = $this->callPrivateMethod('getInstance', $this->repository, $result);
         $this->assertInstanceOf(Imagick::class, $result);

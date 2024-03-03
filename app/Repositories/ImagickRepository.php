@@ -22,13 +22,9 @@ class ImagickRepository
         $this->imagickDraw = $imagickDraw;
     }
 
-    private function setImager(?string $file = '') : int
+    private function setImager() : int
     {
-        $imagick = clone $this->imagick;
-        if (empty($file) === false) {
-            $imagick->readImage($file);
-        }
-        $this->instances[] = $imagick;
+        $this->instances[] = clone $this->imagick;
         return (count($this->instances) - 1);
     }
 
@@ -55,9 +51,12 @@ class ImagickRepository
         return $this->instances[$id];
     }
 
-    public function setImageByUrl(string $url): int
+    public function setBinaryImage(string $binary): int
     {
-        return $this->setImager($url);
+        $id = $this->setImager();
+        $imager = $this->instances[$id];
+        $imager->readImageBlob($binary);
+        return $id;
     }
 
     public function setRectImage(int $width, int $height, string $color, string $format) : int

@@ -133,15 +133,11 @@ class ArticleRepositoryTest extends FeatureTestCase
             'llm_name' => 'ai',
             'image' => [
                 'path' => 'new path',
-                'description' => 'new description',
-                'size' => 'new size',
                 'model_name' => 'new model_name',
             ]
         ]);
         $result = $this->repository->read($id);
         $this->assertEquals('new path', $result['image']['path']);
-        $this->assertEquals('new description', $result['image']['description']);
-        $this->assertEquals('new size', $result['image']['size']);
         $this->assertEquals('new model_name', $result['image']['model_name']);
     }
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
-use App\Interfaces\LlmRepositoryInterface;
-use App\Interfaces\AiImageRepositoryInterface;
+use App\Interfaces\ApiRepositoryInterface;
+use App\Repositories\DeepLRepository;
 use App\Enums\AiGenreEnum;
 use App\Enums\AiAdjectiveEnum;
 use App\Enums\AiPersonalityEnum;
@@ -14,7 +14,7 @@ use DateTime;
 
 trait LlmServiceTrait
 {
-    private LlmRepositoryInterface|AiImageRepositoryInterface $repository;
+    private ApiRepositoryInterface $repository;
     private array $attributes = [];
     private array $conditions = [];
     private array $roles = [];
@@ -24,32 +24,32 @@ trait LlmServiceTrait
         $author = $this->makeAuthor();
         $article = $this->makeArticle($author, $date);
         if ($this->validateLang($article) === false) {
-            $article = $this->transrateArticle($article);
+            $article = $this->translateArticle($article, app(DeepLRepository::class));
         }
         $title = $this->makeTitle($article);
         $attributes = $this->attributes;
-        $model = $this->repository->getModel('text');
+        $model = $this->repository->getModel();
         return compact('title', 'article', 'author', 'attributes', 'model');
     }
 
     private function makeArticle(string $author, DateTime $date): string
     {
         $message = $this->makeSystemMessage($author, $date);
-        $this->repository->setMessage($message, 'system');
-        $response = $this->repository->makeText();
+        $this->repository->setContent($message);
+        $response = $this->repository->requestApi();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
         }
-        return $this->repository->getContent($response);
+        return $response;
     }
 
     private function makeTitle(string $article): string
     {
         $lang = $this->getLang();
-        $this->repository->setMessage("次に入力される文章のタイトルを{$lang}で作ってください。", 'system');
-        $this->repository->setMessage($article, 'user');
-        $response = $this->repository->makeText();
-        return empty($response) ? '' : $this->repository->getContent($response);
+        $this->repository->setContent("次に入力される文章の『タイトル』を『{$lang}』で作ってください。『タイトル』は100文字以内にしてください。");
+        $this->repository->setContent($article);
+        $response = $this->repository->requestApi();
+        return empty($response) ? '' : $response;
     }
 
     private function makeSystemMessage(string $author, DateTime $date): string
@@ -70,13 +70,12 @@ MESSAGE;
         return $message;
     }
 
-    private function transrateArticle(string $article): string
+    private function translateArticle(string $article, DeepLRepository $translater): string
     {
-        $lang = $this->getLang();
-        $this->repository->setMessage("次に入力される文章を{$lang}にしてください。", 'system');
-        $this->repository->setMessage($article, 'user');
-        $response = $this->repository->makeText();
-        return empty($response) ? '' : $this->repository->getContent($response);
+        $translater->setLang(app()->currentLocale());
+        $translater->setContent($article);
+        $response = $translater->requestApi();
+        return empty($response) ? '' : $response;
     }
 
     private function getLang(): string
