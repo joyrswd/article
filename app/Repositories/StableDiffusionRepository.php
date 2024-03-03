@@ -5,61 +5,27 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Interfaces\AiImageRepositoryInterface;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
-class StableDiffusionRepository implements AiImageRepositoryInterface
+class StableDiffusionRepository extends ApiRepository implements AiImageRepositoryInterface
 {
-    private string $secret;
-    private int $timeout;
-    private string $endpoint;
-    private string $model;
-
     public function __construct()
     {
-        $config = config('llm.ai.stability');
-        $this->secret = $config['secret'];
-        $this->timeout = $config['timeout'];
-        $this->endpoint = $config['endpoint'];
-        $this->model = $config['model'];
+        parent::__construct(...config('llm.ai.stability'));
+        $this->content['model'] = $this->model;
+        $this->content['samples'] = 1;
+        $this->content['text_prompts'] = [];
+        $this->dataGetter = 'artifacts.0.base64';
     }
 
-    /**
-     * ChatGPTのAPIを使って複数のメモから文書を生成する
-     */
-    public function makeImage(array $messages): array
+    public function setContent(mixed $text): void
     {
-        $prompt = array_map(function($message){return ['text' => $message];}, $messages);
-        try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->secret
-            ])->timeout($this->timeout)->post($this->endpoint, [
-                'model' => $this->model,
-                'text_prompts' => $prompt,
-                "samples"=> 1,
-            ]);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return [];
-        }
-        return empty($response) ? [] : $response->json();
+        $this->content['text_prompts'][] = ['text' => $text];
     }
 
-    /**
-     * 結果から画像のURLを返す
-     */
-    public function getBinary(array $response): string
+    public function getImage(): string
     {
-        return empty($response['artifacts']) ? '' : base64_decode($response['artifacts'][0]['base64']);
-    }
-
-    /**
-     * モデル名を返す
-     */
-    public function getModel() : string
-    {
-        return $this->model;
+        $result = $this->requestApi();
+        return empty($result) ? '' : base64_decode($result);
     }
 
 }
