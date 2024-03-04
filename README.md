@@ -3,7 +3,7 @@
 
 ## 概要
 
-AIを駆使したブログ記事生成サイトです。  
+AIを駆使したブログ記事自動生成サイトです。  
 Laravel + Vue.jsで作成しています。
 
 https://ja.ai-rticle.site/  
@@ -11,9 +11,9 @@ https://en.ai-rticle.site/
 
 ## 特徴
 - gpt-3.5-turboとgemini-proの2種類のLLMを使用
-- 日本語と英語、2種類の記事生成に対応
-- 翻訳にはDeepLのAPIを使用
+- 日本語と英語、2種類の記事を生成
 - dalleとStable Diffusionによる記事の挿絵画像生成
+- 翻訳にはDeepLのAPIを使用
 - レスポンシブデザインのSPA
 - LaravelとVue.jsはhal+jsonを介してAPI連携
 - RSS自動生成
@@ -38,10 +38,13 @@ https://en.ai-rticle.site/
 ```mermaid
 graph LR
 
-subgraph AI[AI API]
+subgraph AI[API]
     subgraph Text
         chatgpt
         ~~~gemini
+    end
+    subgraph Reference
+        Wikipedia
     end
     subgraph Translate
         DeepL
