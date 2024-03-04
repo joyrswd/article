@@ -25,7 +25,7 @@ trait LlmServiceTrait
         $author = $this->makeAuthor();
         $article = $this->makeArticle($author, $date);
         if ($this->validateLang($article) === false) {
-            $article = $this->translateArticle($article, app(DeepLRepository::class));
+            $article = $this->translateArticle($article);
         }
         $title = $this->makeTitle($article);
         $attributes = $this->attributes;
@@ -35,7 +35,12 @@ trait LlmServiceTrait
 
     private function makeArticle(string $author, DateTime $date): string
     {
-        $this->setUpMessages($author, $date);
+        $command = $this->makeCommand($author, $date);
+        $this->repository->setContent($command);
+        $reference = $this->makeReference($date);
+        $this->repository->setContent($reference);
+        $conditions = $this->makeConditons($author);
+        $this->repository->setContent($conditions);
         $response = $this->repository->requestApi();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
@@ -52,20 +57,16 @@ trait LlmServiceTrait
         return empty($response) ? '' : $response;
     }
 
-    private function setUpMessages(string $author, DateTime $date): void
+    private function makeCommand(string $author, DateTime $date): string
     {
         $lang = $this->getLang();
-        $message = <<<MESSAGE
+        return <<<MESSAGE
 あなたは『{$lang}』を母語とする『{$author}』です。
-次に『{$date->format(__("n月j日"))}』に関する情報を示すので、あなたの興味ある情報を選んで『{$lang}』で記事を書いてください。
+次に『{$date->format(__("n月j日"))}』に関する情報を示すので、あなたの興味ある情報を選び『{$lang}』で記事を書いてください。
 MESSAGE;
-        $this->repository->setContent($message);
-        $list = $this->getAboutToday($date);
-        $this->repository->setContent($list);
-        $this->addConditons($author);
     }
 
-    private function addConditons(string $author)
+    private function makeConditons(string $author): string
     {
         $conditions = [
             "記事の作成は次のルールに従ってください。",
@@ -78,19 +79,20 @@ MESSAGE;
                 $conditions[] = "- {$condition}";
             }
         }
-        $this->repository->setContent(implode("\n", $conditions));
+        return implode("\n", $conditions);
     }
 
-    private function getAboutToday(DateTime $date) : string
+    private function makeReference(DateTime $date) : string
     {
-        $today = $date->format(__("n月j日"));
         $wiki = app(WikipediaRepository::class);
+        $today = $date->format(__("n月j日"));
         $wiki->setContent($today);
         return $wiki->requestApi();
     }
 
-    private function translateArticle(string $article, DeepLRepository $translater): string
+    private function translateArticle(string $article): string
     {
+        $translater = app(DeepLRepository::class);
         $translater->setLang(app()->currentLocale());
         $translater->setContent($article);
         $response = $translater->requestApi();
