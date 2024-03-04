@@ -18,6 +18,7 @@ abstract class ApiRepository implements ApiRepositoryInterface
     protected array $content = [];
     protected string $tokenType = 'Bearer';
     protected string $dataGetter = '';
+    protected string $method = 'post';
 
     public function __construct(string $secret, int $timeout, string $endpoint, string $model)
     {
@@ -35,16 +36,21 @@ abstract class ApiRepository implements ApiRepositoryInterface
             if (empty($this->tokenType) === false) {
                 $request->withToken($this->secret, $this->tokenType);
             }
-            $response = $request->post($this->endpoint, $this->content);
+            $response = $request->{$this->method}($this->endpoint, $this->content);
             $data = $response->json();
             if ($message = $this->hasError($data)) {
                 throw new \Exception($message);
             }
-            return data_get($data, $this->dataGetter);
+            return $this->getData($data);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
             return null;
         }
+    }
+
+    protected function getData(array $data): mixed
+    {
+        return data_get($data, $this->dataGetter);
     }
 
     /**

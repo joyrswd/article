@@ -72,9 +72,10 @@ class GenerateArticleCommand extends Command
         $textResponse = $service->makePost(new \DateTime());
         $article = $this->saveArticle(...$textResponse);
         if ($service instanceof AiImageServiceInterface) {
+            //画像生成実行
             $this->saveImage($article['id'], $article['content'], $service);
         }
-        //画像生成実行
+        //RSSの更新
         $this->updateRss();
     }
 
