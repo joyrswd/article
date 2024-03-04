@@ -14,7 +14,8 @@ enum AiGenreEnum:string
     case Food = 'グルメ';
     case Health = '健康';
     case Sports = 'スポーツ';
-    case Animals = '動物';
-    case Plants = '植物';
-    case Nature = '自然現象';
+    case Nature = '自然';
+    case Entertainment = 'エンタメ';
+    case Economy = '経済';
+    case Politics = '政治';
 }

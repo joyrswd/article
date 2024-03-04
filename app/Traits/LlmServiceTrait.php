@@ -6,6 +6,7 @@ namespace App\Traits;
 
 use App\Interfaces\ApiRepositoryInterface;
 use App\Repositories\DeepLRepository;
+use App\Repositories\WikipediaRepository;
 use App\Enums\AiGenreEnum;
 use App\Enums\AiAdjectiveEnum;
 use App\Enums\AiPersonalityEnum;
@@ -34,8 +35,7 @@ trait LlmServiceTrait
 
     private function makeArticle(string $author, DateTime $date): string
     {
-        $message = $this->makeSystemMessage($author, $date);
-        $this->repository->setContent($message);
+        $this->setUpMessages($author, $date);
         $response = $this->repository->requestApi();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
@@ -46,28 +46,47 @@ trait LlmServiceTrait
     private function makeTitle(string $article): string
     {
         $lang = $this->getLang();
-        $this->repository->setContent("次に入力される文章の『タイトル』を『{$lang}』で作ってください。『タイトル』は100文字以内にしてください。");
+        $this->repository->setContent("次に入力される文章の『タイトル』を100文字以内の『{$lang}』で作成し、『タイトル』のみを出力してください。");
         $this->repository->setContent($article);
         $response = $this->repository->requestApi();
         return empty($response) ? '' : $response;
     }
 
-    private function makeSystemMessage(string $author, DateTime $date): string
+    private function setUpMessages(string $author, DateTime $date): void
     {
-        $month = $date->format('n月');
         $lang = $this->getLang();
         $message = <<<MESSAGE
 あなたは『{$lang}』を母語とする『{$author}』です。
-『{$lang}』を母語とする『{$author}』が書くような内容と文体で、『{$month}』に関する記事を『{$lang}』で書いてください。
+次に『{$date->format(__("n月j日"))}』に関する情報を示すので、あなたの興味ある情報を選んで『{$lang}』で記事を書いてください。
 MESSAGE;
+        $this->repository->setContent($message);
+        $list = $this->getAboutToday($date);
+        $this->repository->setContent($list);
+        $this->addConditons($author);
+    }
+
+    private function addConditons(string $author)
+    {
+        $conditions = [
+            "記事の作成は次のルールに従ってください。",
+            "- 『{$author}』が書くような文体にしてください。",
+            "- 記事にはあなたの考えや感想、体験などを含めてください。",
+        ];
         if (empty($this->conditions) === false) {
-            $message .= "次のルールに従ってください。\n";
             foreach ($this->conditions as $text) {
-                $condition = $this->convert($text, $author, $month);
-                $message .= "- {$condition}\n";
+                $condition = $this->convert($text, $author);
+                $conditions[] = "- {$condition}";
             }
         }
-        return $message;
+        $this->repository->setContent(implode("\n", $conditions));
+    }
+
+    private function getAboutToday(DateTime $date) : string
+    {
+        $today = $date->format(__("n月j日"));
+        $wiki = app(WikipediaRepository::class);
+        $wiki->setContent($today);
+        return $wiki->requestApi();
     }
 
     private function translateArticle(string $article, DeepLRepository $translater): string
@@ -107,11 +126,10 @@ MESSAGE;
         return "{$genre}大好きの{$adjective}で{$personality}な{$generation}";
     }
 
-    private function convert(string $text, string $author, string $month): string
+    private function convert(string $text, string $author): string
     {
         $placeHolder = [
             '{author}' => $author,
-            '{month}' => $month,
         ];
         foreach ($this->attributes as $key => $value) {
             $index = '{' . $key . '}';
