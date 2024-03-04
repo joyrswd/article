@@ -13,9 +13,13 @@
     "スポーツ": "Sports",
     "動物": "Animals",
     "植物": "Plants",
-    "自然現象": "Nature",
+    "自然": "Nature",
     "快活": "Cheerful",
     "皮肉屋": "Cynical",
     "高貴": "Noble",
-    "粗野": "Roughly"
+    "粗野": "Roughly",
+    "エンタメ": "Entertainment",
+    "経済": "Economy",
+    "政治": "Politics",
+    "n月j日": "F_j"
 }

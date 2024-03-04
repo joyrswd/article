@@ -6,6 +6,7 @@ use App\Services\OpenAiService;
 use App\Repositories\OpenAiRepository;
 use App\Repositories\OpenAiImageRepository;
 use App\Repositories\DeepLRepository;
+use App\Repositories\WikipediaRepository;
 use DateTime;
 use Mockery;
 
@@ -25,26 +26,24 @@ class OpenAiServiceTest extends FeatureTestCase
      */
     public function convert_正常(): void
     {
-        $text = '{month}の{author}。';
-        $month = '1月';
+        $text = '{author}です。';
         $author = '作者';
-        $result = $this->callPrivateMethod('convert', app(OpenAiService::class), $text, $author, $month);
-        $this->assertEquals('1月の作者。', $result);
+        $result = $this->callPrivateMethod('convert', app(OpenAiService::class), $text, $author);
+        $this->assertEquals('作者です。', $result);
     }
 
     /**
      * @test
      */
-    public function makeSystemMessage_正常(): void
+    public function makeCommand_正常(): void
     {
         $date = new DateTime('2021-02-01');
         $author = '元気な作者';
         $service = app(OpenAiService::class);
-        $this->setPrivateProperty('conditions', [], $service);
-        $result = $this->callPrivateMethod('makeSystemMessage', $service, $author, $date);
+        $result = $this->callPrivateMethod('makeCommand', $service, $author, $date);
         $message = <<<MESSAGE
 あなたは『日本語』を母語とする『元気な作者』です。
-『日本語』を母語とする『元気な作者』が書くような内容と文体で、『2月』に関する記事を『日本語』で書いてください。
+次に『2月1日』に関する情報を示すので、あなたの興味ある情報を選び『日本語』で記事を書いてください。
 MESSAGE;
         $this->assertEquals($message, $result);
     }
@@ -52,14 +51,49 @@ MESSAGE;
     /**
      * @test
      */
+    public function makeConditons_正常(): void
+    {
+        $author = '元気な作者';
+        $service = app(OpenAiService::class);
+        $this->setPrivateProperty('conditions', [], $service);
+        $result = $this->callPrivateMethod('makeConditons', $service, $author);
+        $message = <<<MESSAGE
+記事の作成は次のルールに従ってください。
+- 『{$author}』が書くような文体にしてください。
+- 記事にはあなたの考えや感想、体験などを含めてください。
+MESSAGE;
+        $this->assertEquals($message, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function makeReference_正常(): void
+    {
+        $date = new DateTime('2021-02-01');
+        $service = app(OpenAiService::class);
+        $this->setPrivateProperty('conditions', [], $service);
+        $repository = mock(WikipediaRepository::class)->makePartial();
+        $repository->shouldReceive('requestApi')->once()->andReturn('reference');
+        $this->app->instance(WikipediaRepository::class, $repository);
+        $result = $this->callPrivateMethod('makeReference', $service, $date);
+        $this->assertEquals('reference', $result);
+    }
+
+    /**
+     * @test
+     */
     public function makeArticle_正常(): void
     {
+        $wiki = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $wiki->shouldReceive('requestApi')->andReturn('reference');
+        $this->app->instance(WikipediaRepository::class, $wiki);
         $repository = Mockery::mock(OpenAiRepository::class)->makePartial();
         $repository->shouldReceive('requestApi')->andReturn('articleテスト');
         $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository, app(OpenAiImageRepository::class)), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
-    
+
     /**
      * @test
      */
@@ -146,9 +180,9 @@ MESSAGE;
     {
         $translater = Mockery::mock(DeepLRepository::class)->makePartial();
         $translater->shouldReceive('requestApi')->andReturn('article');
-        $result = $this->callPrivateMethod('translateArticle', app(OpenAiService::class), '文章', $translater);
+        $this->app->instance(DeepLRepository::class, $translater);
+        $result = $this->callPrivateMethod('translateArticle', app(OpenAiService::class), '文章');
         $this->assertEquals('article', $result);
-    }    
-    
+    }
 
 }
