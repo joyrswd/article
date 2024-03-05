@@ -13,18 +13,18 @@ class OpenAiRepository extends ApiRepository
         $this->timeout = $config['timeout'];
         $this->endpoint = $config['text']['endpoint'];
         $this->model = $config['text']['model'];
-        $this->content = [
-            'model' => $this->model,
-            'presence_penalty' => 1,
-            'top_p' => 0,
-            'messages' => [],
-        ];
+        $this->tokenType = 'Bearer';
         $this->dataGetter = 'choices.0.message.content';
     }
 
-    public function setContent(mixed $content): void
+    protected function prepareContent(): array
     {
-        $this->content['messages'][] = ["role" => 'user', "content" => $content];
+        return [
+            'model' => $this->model,
+            'presence_penalty' => 1,
+            'top_p' => 0,
+            'messages' => array_map(function($prompt){ return ["role" => 'user', "content" => $prompt];}, $this->prompt),
+        ];
     }
 
     public function hasError($data) : ?string

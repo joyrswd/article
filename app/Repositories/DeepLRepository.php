@@ -6,23 +6,26 @@ namespace App\Repositories;
 
 class DeepLRepository extends ApiRepository
 {
+    private $lang;
     public function __construct()
     {
         parent::__construct(...config('llm.ai.deepl'));
         $this->tokenType = 'DeepL-Auth-Key';
         $this->dataGetter = 'translations.0.text';
-        $this->content['text'] = [];
-        $this->content['target_lang'] = app()->currentLocale();
+        $this->lang = app()->currentLocale();
     }
 
-    public function setContent(mixed $text):void
+    protected function prepareContent(): array
     {
-        $this->content['text'][] = $text;
+        return [
+            'text' => $this->prompt,
+            'target_lang' => strtoupper($this->lang)
+        ];
     }
 
     public function setLang(string $lang)
     {
-        $this->content['target_lang'] = strtoupper($lang);
+        $this->lang = $lang;
     }
 
     protected function hasError(array $data): ?string

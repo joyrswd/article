@@ -36,11 +36,11 @@ trait LlmServiceTrait
     private function makeArticle(string $author, DateTime $date): string
     {
         $command = $this->makeCommand($author, $date);
-        $this->repository->setContent($command);
+        $this->repository->addPrompt($command);
         $reference = $this->makeReference($date);
-        $this->repository->setContent($reference);
+        $this->repository->addPrompt($reference);
         $conditions = $this->makeConditons($author);
-        $this->repository->setContent($conditions);
+        $this->repository->addPrompt($conditions);
         $response = $this->repository->requestApi();
         if (empty($response)) {
             throw new \Exception('API処理でエラーが発生しました。');
@@ -51,8 +51,8 @@ trait LlmServiceTrait
     private function makeTitle(string $article): string
     {
         $lang = $this->getLang();
-        $this->repository->setContent("次に入力される文章の『タイトル』を100文字以内の『{$lang}』で作成し、『タイトル』のみを出力してください。");
-        $this->repository->setContent($article);
+        $this->repository->addPrompt("次に入力される文章の『タイトル』を100文字以内の『{$lang}』で作成し、『タイトル』のみを出力してください。");
+        $this->repository->addPrompt($article);
         $response = $this->repository->requestApi();
         return empty($response) ? '' : $response;
     }
@@ -86,7 +86,7 @@ MESSAGE;
     {
         $wiki = app(WikipediaRepository::class);
         $today = $date->format(__("n月j日"));
-        $wiki->setContent($today);
+        $wiki->addPrompt($today);
         return $wiki->requestApi();
     }
 
@@ -94,7 +94,7 @@ MESSAGE;
     {
         $translater = app(DeepLRepository::class);
         $translater->setLang(app()->currentLocale());
-        $translater->setContent($article);
+        $translater->addPrompt($article);
         $response = $translater->requestApi();
         return empty($response) ? '' : $response;
     }
