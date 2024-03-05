@@ -23,11 +23,11 @@ class OpenAiImageRepository extends ApiRepository implements AiImageRepositoryIn
     {
         return [
             'model' => $this->model,
-            'prompt' => implode("\n", $this->prompt),
             'n' => 1,
             'quality' => 'standard',
             'response_format' => 'b64_json',
             'size' => '1024x1024',
+            'prompt' => implode("\n", $this->prompt),
         ];
     }
 

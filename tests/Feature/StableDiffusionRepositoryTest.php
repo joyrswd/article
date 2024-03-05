@@ -29,6 +29,21 @@ class StableDiffusionRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
+    public function prepareContent_正常(): void
+    {
+        $this->repository->addPrompt('テスト');
+        $content = $this->callPrivateMethod('prepareContent', $this->repository);
+        $model = $this->getPrivateProperty('model', $this->repository);
+        $this->assertEquals([
+            'model' => $model,
+            'samples' => 1,
+            'text_prompts' => [['text' => 'テスト']],
+        ], $content);
+    }
+
+    /**
+     * @test
+     */
     public function requestApi_正常(): void
     {
         Http::fake();

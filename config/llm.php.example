@@ -20,17 +20,23 @@ return [
             'endpoint' => '', //  GoogleのAPIエンドポイント
             'model' => '', // GoogleのAPI言語モデル(DBへの記録のみ、通信不使用)
         ],
+        'claude' => [
+            'secret' => '', // ClaudeのAPIキー
+            'timeout' => 60, // API通信接続時間（秒）
+            'endpoint' => '', // ClaudeのAPIエンドポイント
+            'model' => '', // ClaudeののAPI言語モデル
+        ],
         'stability' => [
             'secret' => '', // StableDiffusionのAPIキー
             'timeout' => 90, // API通信接続時間（秒）
             'endpoint' => "", // StableDiffusionのAPIエンドポイント
-            'model' => '', // StableDiffusionのAPIモデル(DBへの記録のみ、通信不使用)
+            'model' => '', // StableDiffusionのAPIモデル
         ],
         'deepl' => [
             'secret' => '', // DeepLのAPIキー
             'timeout' => 90, // API通信接続時間（秒）
             'endpoint' => '', // DeepLのAPIエンドポイント
-            'model' => 'v2', // DeepLのAPIモデル(DBへの記録のみ、通信不使用)
+            'model' => '', // DeepLのAPIモデル(DBへの記録のみ、通信不使用)
         ]
 
     ],
