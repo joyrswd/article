@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-class OpenAiRepository extends ApiRepository
+class LlamaRepository extends ApiRepository
 {
     public function __construct()
     {
-        $config = config('llm.ai.openai');
-        $this->secret = $config['secret'];
-        $this->timeout = $config['timeout'];
-        $this->endpoint = $config['text']['endpoint'];
-        $this->model = $config['text']['model'];
+        parent::__construct(...config('llm.ai.llama'));
         $this->tokenType = 'Bearer';
         $this->dataGetter = 'choices.0.message.content';
     }
@@ -21,9 +17,8 @@ class OpenAiRepository extends ApiRepository
     {
         return [
             'model' => $this->model,
-            'presence_penalty' => 1,
-            'top_p' => 0,
-            'messages' => array_map(function($prompt){ return ["role" => 'user', "content" => $prompt];}, $this->prompt),
+            'max_tokens' => 1000,
+            'messages' => array_map(function($prompt){ return ["role" => 'user', "content" => $prompt];}, $this->prompt)
         ];
     }
 

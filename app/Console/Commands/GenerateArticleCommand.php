@@ -6,6 +6,8 @@ namespace App\Console\Commands;
 
 use App\Services\OpenAiService;
 use App\Services\GoogleAiService;
+use App\Services\LlamaService;
+use App\Services\ClaudeService;
 use App\Services\AttributeService;
 use App\Services\AuthorService;
 use App\Services\ArticleService;
@@ -60,6 +62,7 @@ class GenerateArticleCommand extends Command
         $llm = match ($this->argument('llm')) {
             'google' => GoogleAiService::class,
             'openai' => OpenAiService::class,
+            'claude' => ClaudeService::class,
             default => OpenAiService::class,
         };
         //言語設定

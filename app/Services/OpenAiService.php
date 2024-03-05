@@ -25,8 +25,9 @@ class OpenAiService implements LlmServiceInterface, AiImageServiceInterface
 
     public function makeImage(string $article) : string
     {
-        $prompt = "次の文章の挿絵を生成してください。\n\n" . $article;
-        $this->imageRepository->setContent($prompt);
+        $prompt = "次の文章の挿絵を生成してください。";
+        $this->imageRepository->addPrompt($prompt);
+        $this->imageRepository->addPrompt($article);
         $response = $this->imageRepository->getImage();
         if (empty($response)) {
             return '';

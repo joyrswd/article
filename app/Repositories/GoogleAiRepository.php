@@ -11,17 +11,17 @@ class GoogleAiRepository extends ApiRepository
     {
         parent::__construct(...config('llm.ai.google'));
         $this->header['x-goog-api-key'] = $this->secret;
-        $this->tokenType = '';
-        $this->content['contents'] = [
-            'role' => 'user',
-            'parts' => []
-        ];
         $this->dataGetter = 'candidates.0.content.parts.0.text';
     }
 
-    public function setContent(mixed $text):void
+    protected function prepareContent(): array
     {
-        $this->content['contents']['parts'][] = ['text' => $text];
+        return [
+            'contents' => [
+                'role' => 'user',
+                'parts' => array_map(function($prompt){ return ['text' => $prompt];}, $this->prompt)
+            ]
+        ];
     }
 
     protected function hasError(array $data): ?string
