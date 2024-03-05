@@ -19,11 +19,11 @@ class WikipediaRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setContent_正常(): void
+    public function addPrompt_正常(): void
     {
-        $this->repository->setContent(date('2月2日'));
-        $content = $this->getPrivateProperty('content', $this->repository);
-        $this->assertEquals('2月2日', $content['titles']);
+        $this->repository->addPrompt(date('2月2日'));
+        $prompt = $this->getPrivateProperty('prompt', $this->repository);
+        $this->assertContains('2月2日', $prompt);
     }
 
     /**
@@ -43,7 +43,7 @@ class WikipediaRepositoryTest extends FeatureTestCase
                     };
                 }
             });
-        $this->repository->setContent('日付');
+        $this->repository->addPrompt('日付');
         $result = $this->repository->requestApi();
         $this->assertEquals('レスポンス', $result);
     }

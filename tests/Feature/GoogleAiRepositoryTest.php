@@ -11,12 +11,12 @@ class GoogleAiRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setContent_正常(): void
+    public function addPrompt_正常(): void
     {
         $repository = new GoogleAiRepository();
-        $repository->setContent('テスト');
-        $content = $this->getPrivateProperty('content', $repository);
-        $this->assertEquals([['text' => 'テスト']], $content['contents']['parts']);
+        $repository->addPrompt('テスト');
+        $prompt = $this->getPrivateProperty('prompt', $repository);
+        $this->assertContains('テスト', $prompt);
     }
 
     /**
@@ -38,7 +38,7 @@ class GoogleAiRepositoryTest extends FeatureTestCase
                 }
             });
         $repository = new GoogleAiRepository();
-        $repository->setContent('テスト');
+        $repository->addPrompt('テスト');
         $result = $repository->requestApi();
         $this->assertEquals('レスポンス', $result);
     }

@@ -19,11 +19,11 @@ class DeepLRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setContent_正常(): void
+    public function addPrompt_正常(): void
     {
-        $this->repository->setContent('テスト');
-        $content = $this->getPrivateProperty('content', $this->repository);
-        $this->assertEquals(['テスト'], $content['text']);
+        $this->repository->addPrompt('テスト');
+        $prompt = $this->getPrivateProperty('prompt', $this->repository);
+        $this->assertContains('テスト', $prompt);
     }
 
     /**
@@ -44,7 +44,7 @@ class DeepLRepositoryTest extends FeatureTestCase
                     };
                 }
             });
-        $this->repository->setContent('翻訳テキスト');
+        $this->repository->addPrompt('翻訳テキスト');
         $result = $this->repository->requestApi();
         $this->assertEquals('レスポンス', $result);
     }
@@ -55,8 +55,8 @@ class DeepLRepositoryTest extends FeatureTestCase
     public function setLang_正常(): void
     {
         $this->repository->setLang('テスト');
-        $content = $this->getPrivateProperty('content', $this->repository);
-        $this->assertEquals('テスト', $content['target_lang']);
+        $lang = $this->getPrivateProperty('lang', $this->repository);
+        $this->assertEquals('テスト', $lang);
     }
 
     /**
