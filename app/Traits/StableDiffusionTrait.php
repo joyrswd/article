@@ -14,16 +14,16 @@ trait StableDiffusionTrait {
         if (app()->currentLocale() !== 'en') {
             $article = $this->translateToEnglish($article);
         }
-        $this->imageRepository->setContent('Draw a illustration for the following article.');
-        $this->imageRepository->setContent($article);
+        $this->imageRepository->addPrompt('Draw a illustration for the following article.');
+        $this->imageRepository->addPrompt($article);
         return $this->imageRepository->getImage();
     }
 
     private function translateToEnglish(string $text): string
     {
         $deepL = app(DeepLRepository::class);
-        $deepL->setLang('EN');
-        $deepL->setContent($text);
+        $deepL->setLang('en');
+        $deepL->addPrompt($text);
         return $deepL->requestApi();
     }
  

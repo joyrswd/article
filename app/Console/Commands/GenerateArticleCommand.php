@@ -63,6 +63,7 @@ class GenerateArticleCommand extends Command
             'google' => GoogleAiService::class,
             'openai' => OpenAiService::class,
             'claude' => ClaudeService::class,
+//            'llama' => LlamaService::class,
             default => OpenAiService::class,
         };
         //言語設定

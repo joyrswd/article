@@ -8,5 +8,5 @@ interface ApiRepositoryInterface
 {
     public function requestApi(): mixed;
     public function getModel(): string;
-    public function setContent(mixed $content): void;
+    public function addPrompt(mixed $content): void;
 }

@@ -11,15 +11,17 @@ class StableDiffusionRepository extends ApiRepository implements AiImageReposito
     public function __construct()
     {
         parent::__construct(...config('llm.ai.stability'));
-        $this->content['model'] = $this->model;
-        $this->content['samples'] = 1;
-        $this->content['text_prompts'] = [];
         $this->dataGetter = 'artifacts.0.base64';
+        $this->tokenType = 'Bearer';
     }
 
-    public function setContent(mixed $text): void
+    protected function prepareContent(): array
     {
-        $this->content['text_prompts'][] = ['text' => $text];
+        return [
+            'model' => $this->model,
+            'samples' => 1,
+            'text_prompts' => array_map(function($prompt){ return ['text' => $prompt];}, $this->prompt),
+        ];
     }
 
     public function getImage(): string

@@ -8,23 +8,18 @@ class LlamaRepository extends ApiRepository
 {
     public function __construct()
     {
-        $config = config('llm.ai.llama');
-        $this->secret = $config['secret'];
-        $this->timeout = $config['timeout'];
-        $this->endpoint = $config['endpoint'];
-        $this->model = $config['model'];
-        
-        $this->content = [
-            'model' => $this->model,
-            'messages' => [],
-            'max_tokens' => 1000,
-        ];
+        parent::__construct(...config('llm.ai.llama'));
+        $this->tokenType = 'Bearer';
         $this->dataGetter = 'choices.0.message.content';
     }
 
-    public function setContent(mixed $content): void
+    protected function prepareContent(): array
     {
-        $this->content['messages'][] = ["role" => 'user', "content" => $content];
+        return [
+            'model' => $this->model,
+            'max_tokens' => 1000,
+            'messages' => array_map(function($prompt){ return ["role" => 'user', "content" => $prompt];}, $this->prompt)
+        ];
     }
 
     public function hasError($data) : ?string

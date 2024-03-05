@@ -15,20 +15,20 @@ class OpenAiImageRepository extends ApiRepository implements AiImageRepositoryIn
         $this->timeout = $config['timeout'];
         $this->endpoint = $config['image']['endpoint'];
         $this->model = $config['image']['model'];
-        $this->content = [
+        $this->tokenType = 'Bearer';
+        $this->dataGetter = 'data.0.b64_json';
+    }
+
+    protected function prepareContent(): array
+    {
+        return [
             'model' => $this->model,
-            'prompt' => '',
+            'prompt' => implode("\n", $this->prompt),
             'n' => 1,
             'quality' => 'standard',
             'response_format' => 'b64_json',
             'size' => '1024x1024',
         ];
-        $this->dataGetter = 'data.0.b64_json';
-    }
-
-    public function setContent(mixed $content): void
-    {
-        $this->content['prompt'] .= $content;
     }
 
     public function getImage(): string
