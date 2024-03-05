@@ -4,13 +4,15 @@
 ## 概要
 
 AIを駆使したブログ記事自動生成サイトです。  
-Laravel + Vue.jsで作成しています。
+Laravel + Vue.jsで作成しています。  
+日本語プロンプトで日本語・英語の文章を書かせており、
+現時点で日本語の入力と出力両方に優れたLLMを選んでます。
 
 https://ja.ai-rticle.site/  
 https://en.ai-rticle.site/
 
 ## 特徴
-- gpt-3.5-turboとgemini-proの2種類のLLMを使用
+- gpt-3.5-turbo, gemini-pro, claude-instant1.2の3種類のLLMを使用
 - 日本語と英語、2種類の記事を生成
 - dalleとStable Diffusionによる記事の挿絵画像生成
 - 翻訳にはDeepLのAPIを使用
@@ -42,6 +44,7 @@ subgraph AI[API]
     subgraph Text
         chatgpt
         ~~~gemini
+        ~~~claude
     end
     subgraph Reference
         Wikipedia
