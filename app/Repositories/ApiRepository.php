@@ -32,8 +32,8 @@ abstract class ApiRepository implements ApiRepositoryInterface
 
     public function requestApi(): mixed
     {
-        $content = $this->prepareContent();
         try {
+            $content = $this->prepareContent();
             $request = Http::withHeaders($this->header);
             $request->timeout($this->timeout);
             if (empty($this->tokenType) === false) {

@@ -29,6 +29,22 @@ class WikipediaRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
+    public function prepareContent_正常(): void
+    {
+        $this->repository->addPrompt('テスト');
+        $content = $this->callPrivateMethod('prepareContent', $this->repository);
+        $this->assertEquals([
+            'format' => 'json',
+            'action' => 'query',
+            'prop' => 'extracts',
+            'explaintext' => 'explaintext',
+            'redirects' => 1,
+            'titles' => 'テスト',
+        ], $content);
+    }
+    /**
+     * @test
+     */
     public function requestApi_正常(): void
     {
         Http::fake();

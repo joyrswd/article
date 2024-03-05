@@ -18,8 +18,8 @@ class ClaudeRepository extends ApiRepository
     {
         return [
             'model' => $this->model,
-            'messages' => [['role' => 'user', 'content' => implode("\n", $this->prompt)]],
             'max_tokens' => 1000,
+            'messages' => [['role' => 'user', 'content' => implode("\n", $this->prompt)]],
         ];
     }
 

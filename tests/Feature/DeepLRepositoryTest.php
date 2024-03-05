@@ -19,6 +19,20 @@ class DeepLRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
+    public function prepareContent_正常(): void
+    {
+        $this->repository->addPrompt('テスト');
+        $content = $this->callPrivateMethod('prepareContent', $this->repository);
+        $lang = $this->getPrivateProperty('lang', $this->repository);
+        $this->assertEquals([
+            'text' => ['テスト'],
+            'target_lang' => strtoupper($lang)
+        ], $content);
+    }
+
+    /**
+     * @test
+     */
     public function addPrompt_正常(): void
     {
         $this->repository->addPrompt('テスト');

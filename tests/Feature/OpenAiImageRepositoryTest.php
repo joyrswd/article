@@ -29,6 +29,25 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
+    public function prepareContent_正常(): void
+    {
+        $repository = new OpenAiImageRepository();
+        $repository->addPrompt('テスト');
+        $content = $this->callPrivateMethod('prepareContent', $repository);
+        $model = $this->getPrivateProperty('model', $repository);
+        $this->assertEquals([
+            'model' => $model,
+            'n' => 1,
+            'quality' => 'standard',
+            'response_format' => 'b64_json',
+            'size' => '1024x1024',
+            'prompt' => 'テスト',
+        ], $content);
+    }
+
+    /**
+     * @test
+     */
     public function requestApi_正常(): void
     {
         Http::fake();
