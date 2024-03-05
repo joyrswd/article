@@ -19,11 +19,26 @@ class StableDiffusionRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setContent_正常(): void
+    public function addPrompt_正常(): void
     {
-        $this->repository->setContent('テスト');
-        $content = $this->getPrivateProperty('content', $this->repository);
-        $this->assertEquals([['text' => 'テスト']], $content['text_prompts']);
+        $this->repository->addPrompt('テスト');
+        $prompt = $this->getPrivateProperty('prompt', $this->repository);
+        $this->assertContains('テスト', $prompt);
+    }
+
+    /**
+     * @test
+     */
+    public function prepareContent_正常(): void
+    {
+        $this->repository->addPrompt('テスト');
+        $content = $this->callPrivateMethod('prepareContent', $this->repository);
+        $model = $this->getPrivateProperty('model', $this->repository);
+        $this->assertEquals([
+            'model' => $model,
+            'samples' => 1,
+            'text_prompts' => [['text' => 'テスト']],
+        ], $content);
     }
 
     /**
@@ -44,7 +59,7 @@ class StableDiffusionRepositoryTest extends FeatureTestCase
                     };
                 }
             });
-        $this->repository->setContent('画像生成');
+        $this->repository->addPrompt('画像生成');
         $result = $this->repository->requestApi();
         $this->assertEquals('画像データ', $result);
     }

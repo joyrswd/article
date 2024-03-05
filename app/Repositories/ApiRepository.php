@@ -15,8 +15,8 @@ abstract class ApiRepository implements ApiRepositoryInterface
     protected string $endpoint;
     protected string $model;
     protected array $header = ['Content-Type' => 'application/json'];
-    protected array $content = [];
-    protected string $tokenType = 'Bearer';
+    protected array $prompt = [];
+    protected string $tokenType = '';
     protected string $dataGetter = '';
     protected string $method = 'post';
 
@@ -28,24 +28,33 @@ abstract class ApiRepository implements ApiRepositoryInterface
         $this->model = $model;
     }
 
+    abstract protected function prepareContent(): array;
+
     public function requestApi(): mixed
     {
         try {
+            $content = $this->prepareContent();
             $request = Http::withHeaders($this->header);
             $request->timeout($this->timeout);
             if (empty($this->tokenType) === false) {
                 $request->withToken($this->secret, $this->tokenType);
             }
-            $response = $request->{$this->method}($this->endpoint, $this->content);
+            $response = $request->{$this->method}($this->endpoint, $content);
             $data = $response->json();
             if ($message = $this->hasError($data)) {
                 throw new \Exception($message);
             }
+            $this->prompt = [];
             return $this->getData($data);
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
             return null;
         }
+    }
+
+    public function addPrompt(mixed $content): void
+    {
+        $this->prompt[] = $content;
     }
 
     protected function getData(array $data): mixed

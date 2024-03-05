@@ -10,12 +10,29 @@ class OpenAiRepositoryTest extends FeatureTestCase
     /**
      * @test
      */
-    public function setContent_正常(): void
+    public function addPrompt_正常(): void
     {
         $repository = new OpenAiRepository();
-        $repository->setContent('テスト');
-        $content = $this->getPrivateProperty('content', $repository);
-        $this->assertEquals([['role' => 'user', 'content' => 'テスト']], $content['messages']);
+        $repository->addPrompt('テスト');
+        $prompt = $this->getPrivateProperty('prompt', $repository);
+        $this->assertContains('テスト', $prompt);
+    }
+
+    /**
+     * @test
+     */
+    public function prepareContent_正常(): void
+    {
+        $repository = new OpenAiRepository();
+        $repository->addPrompt('テスト');
+        $content = $this->callPrivateMethod('prepareContent', $repository);
+        $model = $this->getPrivateProperty('model', $repository);
+        $this->assertEquals([
+            'model' => $model,
+            'presence_penalty' => 1,
+            'top_p' => 0,
+            'messages' => [["role" => 'user', "content" => 'テスト']],
+        ], $content);
     }
 
     /**
@@ -37,7 +54,7 @@ class OpenAiRepositoryTest extends FeatureTestCase
                 }
             });
         $repository = new OpenAiRepository();
-        $repository->setContent('テスト');
+        $repository->addPrompt('テスト');
         $result = $repository->requestApi();
         $this->assertEquals('レスポンス', $result);
     }

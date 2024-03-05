@@ -2,18 +2,17 @@
 
 namespace Tests\Feature;
 
-use App\Repositories\GoogleAiRepository;
+use App\Repositories\ClaudeRepository;
 use Illuminate\Support\Facades\Http;
-use PHPUnit\Framework\Assert;
 
-class GoogleAiRepositoryTest extends FeatureTestCase
+class ClaudeRepositoryTest extends FeatureTestCase
 {
     /**
      * @test
      */
     public function addPrompt_正常(): void
     {
-        $repository = new GoogleAiRepository();
+        $repository = new ClaudeRepository();
         $repository->addPrompt('テスト');
         $prompt = $this->getPrivateProperty('prompt', $repository);
         $this->assertContains('テスト', $prompt);
@@ -24,14 +23,15 @@ class GoogleAiRepositoryTest extends FeatureTestCase
      */
     public function prepareContent_正常(): void
     {
-        $repository = new GoogleAiRepository();
-        $repository->addPrompt('テスト');
+        $repository = new ClaudeRepository();
+        $repository->addPrompt('テスト1');
+        $repository->addPrompt('テスト2');
         $content = $this->callPrivateMethod('prepareContent', $repository);
+        $model = $this->getPrivateProperty('model', $repository);
         $this->assertEquals([
-            'contents' => [
-                'role' => 'user',
-                'parts' => [['text' => 'テスト']]
-            ]
+            'model' => $model,
+            'max_tokens' => 1000,
+            'messages' => [['role' => 'user', 'content' => "テスト1\nテスト2"]],
         ], $content);
     }
 
@@ -44,16 +44,15 @@ class GoogleAiRepositoryTest extends FeatureTestCase
         Http::shouldReceive('withHeaders')
             ->once()->andReturn(new class {
                 public function timeout() {}
-                public function withToken() {}
                 public function post () {
                     return new class {
                         public function json() {return [
-                            'candidates' => [['content'=>['parts' => [['text' => 'レスポンス']]]]]
+                            'content' => [['text'=>'レスポンス']]
                         ];}
                     };
                 }
             });
-        $repository = new GoogleAiRepository();
+        $repository = new ClaudeRepository();
         $repository->addPrompt('テスト');
         $result = $repository->requestApi();
         $this->assertEquals('レスポンス', $result);
@@ -64,9 +63,10 @@ class GoogleAiRepositoryTest extends FeatureTestCase
      */
     public function getModel_正常(): void
     {
-        $repository = new GoogleAiRepository();
+        $repository = new ClaudeRepository();
         $this->setPrivateProperty('model', 'test', $repository);
         $result = $repository->getModel();
         $this->assertEquals('test', $result);
     }
+
 }
