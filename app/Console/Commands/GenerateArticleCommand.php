@@ -89,16 +89,18 @@ class GenerateArticleCommand extends Command
         return $this->articleService->add($authorRow['id'], $title, $article, $model);
     }
 
-    private function saveImage(int $id, string $article, AiImageServiceInterface $service)
+    private function saveImage(int $id, string $article, AiImageServiceInterface $service): void
     {
         $imageBinary = $service->makeImage($article);
-        $imageModel = $service->getImageModel();
-        $watermark = '@' . __('site.title') . ' by ' . $imageModel;
-        $imagePath = $this->imageService->put($imageBinary, $watermark);
-        $this->imageService->add($id, $imagePath, $imageModel);
+        if (empty($imageBinary) === false) {
+            $imageModel = $service->getImageModel();
+            $watermark = '@' . __('site.title') . ' by ' . $imageModel;
+            $imagePath = $this->imageService->put($imageBinary, $watermark);
+            $this->imageService->add($id, $imagePath, $imageModel);
+        }
     }
 
-    private function updateRss()
+    private function updateRss(): void
     {
         $aticles = $this->articleService->find([], ['limit' => 10]);
         $path = $this->rssService->getFilePath();

@@ -52,9 +52,10 @@ class DeepLRepositoryTest extends FeatureTestCase
                 public function withToken() {}
                 public function post () {
                     return new class {
-                        public function json() {return [
-                            'translations' => [['text'=>'レスポンス']]
-                        ];}
+                        public function throw() {}
+                        public function json() {
+                            return ['translations' => [['text'=>'レスポンス']]];
+                        }
                     };
                 }
             });

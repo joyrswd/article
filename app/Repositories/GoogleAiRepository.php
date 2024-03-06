@@ -27,7 +27,9 @@ class GoogleAiRepository extends ApiRepository
     protected function hasError(array $data): ?string
     {
         if (array_key_exists('error', $data)) {
-            return implode("\n", $data['error']);
+            return print_r($data['error'], true);
+        } elseif (empty(data_get($data, 'candidates.0.content'))) {
+            return print_r($data['candidates'][0], true);
         }
         return null;
     }

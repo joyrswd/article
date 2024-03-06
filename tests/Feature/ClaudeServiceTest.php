@@ -2,22 +2,22 @@
 
 namespace Tests\Feature;
 
-use App\Services\OpenAiService;
-use App\Repositories\OpenAiRepository;
-use App\Repositories\OpenAiImageRepository;
+use App\Services\ClaudeService;
+use App\Repositories\ClaudeRepository;
+use App\Repositories\StableDiffusionRepository;
 use App\Repositories\DeepLRepository;
 use App\Repositories\WikipediaRepository;
 use DateTime;
 use Mockery;
 
-class OpenAiServiceTest extends FeatureTestCase
+class ClaudeServiceTest extends FeatureTestCase
 {
     /**
      * @test
      */
     public function makeAuthor_正常(): void
     {
-        $result = $this->callPrivateMethod('makeAuthor', app(OpenAiService::class));
+        $result = $this->callPrivateMethod('makeAuthor', app(ClaudeService::class));
         $this->assertStringMatchesFormat('%s大好きの%sで%sな%s', $result);
     }
 
@@ -28,7 +28,7 @@ class OpenAiServiceTest extends FeatureTestCase
     {
         $text = '{author}です。';
         $author = '作者';
-        $result = $this->callPrivateMethod('convert', app(OpenAiService::class), $text, $author);
+        $result = $this->callPrivateMethod('convert', app(ClaudeService::class), $text, $author);
         $this->assertEquals('作者です。', $result);
     }
 
@@ -39,7 +39,7 @@ class OpenAiServiceTest extends FeatureTestCase
     {
         $date = new DateTime('2021-02-01');
         $author = '元気な作者';
-        $service = app(OpenAiService::class);
+        $service = app(ClaudeService::class);
         $result = $this->callPrivateMethod('makeCommand', $service, $author, $date);
         $message = <<<MESSAGE
 あなたは『日本語』を母語とする『元気な作者』です。
@@ -54,7 +54,7 @@ MESSAGE;
     public function makeConditons_正常(): void
     {
         $author = '元気な作者';
-        $service = app(OpenAiService::class);
+        $service = app(ClaudeService::class);
         $lang = $this->callPrivateMethod('getLang', $service);
         $this->setPrivateProperty('conditions', [], $service);
         $result = $this->callPrivateMethod('makeConditons', $service, $author);
@@ -73,7 +73,7 @@ MESSAGE;
     public function makeReference_正常(): void
     {
         $date = new DateTime('2021-02-01');
-        $service = app(OpenAiService::class);
+        $service = app(ClaudeService::class);
         $this->setPrivateProperty('conditions', [], $service);
         $repository = mock(WikipediaRepository::class)->makePartial();
         $repository->shouldReceive('requestApi')->once()->andReturn('reference');
@@ -87,12 +87,12 @@ MESSAGE;
      */
     public function makeArticle_正常(): void
     {
-        $wiki = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $wiki = Mockery::mock(ClaudeRepository::class)->makePartial();
         $wiki->shouldReceive('requestApi')->andReturn('reference');
         $this->app->instance(WikipediaRepository::class, $wiki);
-        $repository = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $repository = Mockery::mock(ClaudeRepository::class)->makePartial();
         $repository->shouldReceive('requestApi')->andReturn('articleテスト');
-        $result = $this->callPrivateMethod('makeArticle', new OpenAiService($repository, app(OpenAiImageRepository::class)), '著者', new DateTime('2021-05-01'));
+        $result = $this->callPrivateMethod('makeArticle', new ClaudeService($repository, app(StableDiffusionRepository::class)), '著者', new DateTime('2021-05-01'));
         $this->assertEquals('articleテスト', $result);
     } 
 
@@ -101,23 +101,23 @@ MESSAGE;
      */
     public function makeTitle_正常(): void
     {
-        $repository = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $repository = Mockery::mock(ClaudeRepository::class)->makePartial();
         $repository->shouldReceive('requestApi')->andReturn('titleテスト');
-        $result = $this->callPrivateMethod('makeTitle', new OpenAiService($repository, app(OpenAiImageRepository::class)), '文章');
+        $result = $this->callPrivateMethod('makeTitle', new ClaudeService($repository, app(StableDiffusionRepository::class)), '文章');
         $this->assertEquals('titleテスト', $result);
-    }
+    }    
     
     /**
      * @test
      */
     public function makePost_正常(): void
     {
-        $repository = Mockery::mock(OpenAiRepository::class)->makePartial();
+        $repository = Mockery::mock(ClaudeRepository::class)->makePartial();
         $repository->shouldReceive('requestApi')->andReturn('テスト');
         $repository->shouldReceive('getModel')->andReturn('test');
-        $service = new OpenAiService($repository, Mockery::mock(OpenAiImageRepository::class));
+        $class = new ClaudeService($repository, app(StableDiffusionRepository::class));
         $date = new \DateTime();
-        $result = $service->makePost($date);
+        $result = $class->makePost($date);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('article', $result);
         $this->assertArrayHasKey('author', $result);
@@ -132,7 +132,7 @@ MESSAGE;
      */
     public function getlang_正常() :void
     {
-        $result = $this->callPrivateMethod('getLang', app(OpenAiService::class));
+        $result = $this->callPrivateMethod('getLang', app(ClaudeService::class));
         $this->assertEquals('日本語', $result);
     }
 
@@ -142,16 +142,16 @@ MESSAGE;
     public function getlang_英語_正常() :void
     {
         app()->setLocale('en');
-        $result = $this->callPrivateMethod('getLang', app(OpenAiService::class));
+        $result = $this->callPrivateMethod('getLang', app(ClaudeService::class));
         $this->assertEquals('英語', $result);
     }
-
+    
     /**
      * @test
      */
     public function validateLang_正常() :void
     {
-        $result = $this->callPrivateMethod('validateLang', app(OpenAiService::class), 'ああああ');
+        $result = $this->callPrivateMethod('validateLang', app(ClaudeService::class), 'ああああ');
         $this->assertTrue($result);
     }
 
@@ -161,7 +161,7 @@ MESSAGE;
     public function validateLang_英語_正常() :void
     {
         app()->setLocale('en');
-        $result = $this->callPrivateMethod('validateLang', app(OpenAiService::class), 'aaaa');
+        $result = $this->callPrivateMethod('validateLang', app(ClaudeService::class), 'aaaa');
         $this->assertTrue($result);
     }
 
@@ -171,20 +171,20 @@ MESSAGE;
     public function validateLang_英語_異常() :void
     {
         app()->setLocale('en');
-        $result = $this->callPrivateMethod('validateLang', app(OpenAiService::class), 'aaあaa');
+        $result = $this->callPrivateMethod('validateLang', app(ClaudeService::class), 'aaあaa');
         $this->assertFalse($result);
     }
 
     /**
      * @test
      */
-    public function translateArticle_正常(): void
+    public function transrateArticle_正常(): void
     {
         $translater = Mockery::mock(DeepLRepository::class)->makePartial();
-        $translater->shouldReceive('requestApi')->andReturn('article');
+        $translater->shouldReceive('requestApi')->andReturn('transrated');
         $this->app->instance(DeepLRepository::class, $translater);
-        $result = $this->callPrivateMethod('translateArticle', app(OpenAiService::class), '文章');
-        $this->assertEquals('article', $result);
+        $result = $this->callPrivateMethod('translateArticle', app(ClaudeService::class), '文章');
+        $this->assertEquals('transrated', $result);
     }
 
 }
