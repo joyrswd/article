@@ -53,9 +53,10 @@ class StableDiffusionRepositoryTest extends FeatureTestCase
                 public function withToken() {}
                 public function post () {
                     return new class {
-                        public function json() {return [
-                            'artifacts' => [['base64'=>'画像データ']]
-                        ];}
+                        public function throw() {}
+                        public function json() {
+                            return ['artifacts' => [['base64'=>'画像データ']]];
+                        }
                     };
                 }
             });

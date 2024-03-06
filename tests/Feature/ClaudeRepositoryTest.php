@@ -46,9 +46,10 @@ class ClaudeRepositoryTest extends FeatureTestCase
                 public function timeout() {}
                 public function post () {
                     return new class {
-                        public function json() {return [
-                            'content' => [['text'=>'レスポンス']]
-                        ];}
+                        public function throw() {}
+                        public function json() {
+                            return ['content' => [['text'=>'レスポンス']]];
+                        }
                     };
                 }
             });

@@ -47,9 +47,10 @@ class GoogleAiRepositoryTest extends FeatureTestCase
                 public function withToken() {}
                 public function post () {
                     return new class {
-                        public function json() {return [
-                            'candidates' => [['content'=>['parts' => [['text' => 'レスポンス']]]]]
-                        ];}
+                        public function throw() {}
+                        public function json() {
+                            return ['candidates' => [['content'=>['parts' => [['text' => 'レスポンス']]]]]];
+                        }
                     };
                 }
             });
