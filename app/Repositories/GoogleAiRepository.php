@@ -17,6 +17,11 @@ class GoogleAiRepository extends ApiRepository
     protected function prepareContent(): array
     {
         return [
+            'generation_config' => [
+                'candidateCount' => 1,
+                'temperature' => 0.3,
+                'maxOutputTokens' => 700,
+            ],
             'contents' => [
                 'role' => 'user',
                 'parts' => array_map(function($prompt){ return ['text' => $prompt];}, $this->prompt)
