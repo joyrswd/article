@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Interfaces\ApiRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 abstract class ApiRepository implements ApiRepositoryInterface
 {
@@ -39,14 +40,14 @@ abstract class ApiRepository implements ApiRepositoryInterface
             if (empty($this->tokenType) === false) {
                 $request->withToken($this->secret, $this->tokenType);
             }
-            $response = $request->{$this->method}($this->endpoint, $content);
+            $response = $request->{$this->method}($this->endpoint, $content)->throw();
             $data = $response->json();
             if ($message = $this->hasError($data)) {
                 throw new \Exception($message);
             }
             $this->prompt = [];
             return $this->getData($data);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error($e->getMessage());
             return null;
         }
