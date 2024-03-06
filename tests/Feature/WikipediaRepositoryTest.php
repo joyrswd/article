@@ -53,9 +53,10 @@ class WikipediaRepositoryTest extends FeatureTestCase
                 public function timeout() {}
                 public function get () {
                     return new class {
-                        public function json() {return [
-                            'query' => ['pages' => [ 100=> ['extract'=>"リード文\nレスポンス"]]]
-                        ];}
+                        public function throw() {}
+                        public function json() {
+                            return ['query' => ['pages' => [ 100=> ['extract'=>"リード文\nレスポンス"]]]];
+                        }
                     };
                 }
             });
