@@ -48,14 +48,14 @@ abstract class ApiRepository implements ApiRepositoryInterface
             //データ取得
             $data = $response->json();
             if ($message = $this->hasError($data)) {
-                $output = $this->endpoint . "\n" . $message;
-                throw new Exception($output);
+                throw new Exception($message);
             }
             //promptを空にする
             $this->prompt = [];
             return $this->getData($data);
         } catch (Throwable $e) {
-            Log::error($e->getMessage());
+            $output = $this->endpoint . "\n" . $e->getMessage();
+            Log::error($output);
             return null;
         }
     }
