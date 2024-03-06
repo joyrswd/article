@@ -7,7 +7,6 @@ use App\Repositories\ClaudeRepository;
 use App\Repositories\StableDiffusionRepository;
 use App\Repositories\DeepLRepository;
 use App\Repositories\WikipediaRepository;
-use App\Services\ImageService;
 use DateTime;
 use Mockery;
 
@@ -44,7 +43,7 @@ class ClaudeServiceTest extends FeatureTestCase
         $result = $this->callPrivateMethod('makeCommand', $service, $author, $date);
         $message = <<<MESSAGE
 あなたは『日本語』を母語とする『元気な作者』です。
-次に『2月1日』に関する情報を示すので、あなたの興味ある情報を選び『日本語』で記事を書いてください。
+次に『2月1日』に関する情報を示すので、あなたの興味ある情報を選び記事を書いてください。
 MESSAGE;
         $this->assertEquals($message, $result);
     }
@@ -56,12 +55,14 @@ MESSAGE;
     {
         $author = '元気な作者';
         $service = app(ClaudeService::class);
+        $lang = $this->callPrivateMethod('getLang', $service);
         $this->setPrivateProperty('conditions', [], $service);
         $result = $this->callPrivateMethod('makeConditons', $service, $author);
         $message = <<<MESSAGE
 記事の作成は次のルールに従ってください。
+- 『{$lang}』で書いてください。
 - 『{$author}』が書くような文体にしてください。
-- 記事にはあなたの考えや感想、体験などを含めてください。
+- 箇条書きにせず、エッセイのようにしてください。
 MESSAGE;
         $this->assertEquals($message, $result);
     }

@@ -57,9 +57,10 @@ class OpenAiImageRepositoryTest extends FeatureTestCase
                 public function withToken() {}
                 public function post () {
                     return new class {
-                        public function json() {return [
-                            'data' => [['b64_json'=>'画像データ']]
-                        ];}
+                        public function throw() {}
+                        public function json() {
+                            return ['data' => [['b64_json'=>'画像データ']]];
+                        }
                     };
                 }
             });

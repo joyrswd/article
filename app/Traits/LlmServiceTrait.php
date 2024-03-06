@@ -51,7 +51,10 @@ trait LlmServiceTrait
     private function makeTitle(string $article): string
     {
         $lang = $this->getLang();
-        $this->repository->addPrompt("次に入力される文章の『タイトル』を100文字以内の『{$lang}』で作成し、『タイトル』のみを出力してください。");
+        $this->repository->addPrompt("'//start'の後に入力される文章のタイトルを{$lang}で作成してください。");
+        $this->repository->addPrompt("タイトルに記号を使用しないでください。");
+        $this->repository->addPrompt("出力するのはタイトルのみとしてください。");
+        $this->repository->addPrompt("//start");
         $this->repository->addPrompt($article);
         $response = $this->repository->requestApi();
         return empty($response) ? '' : $response;
@@ -62,16 +65,18 @@ trait LlmServiceTrait
         $lang = $this->getLang();
         return <<<MESSAGE
 あなたは『{$lang}』を母語とする『{$author}』です。
-次に『{$date->format(__("n月j日"))}』に関する情報を示すので、あなたの興味ある情報を選び『{$lang}』で記事を書いてください。
+次に『{$date->format(__("n月j日"))}』に関する情報を示すので、あなたの興味ある情報を選び記事を書いてください。
 MESSAGE;
     }
 
     private function makeConditons(string $author): string
     {
+        $lang = $this->getLang();
         $conditions = [
             "記事の作成は次のルールに従ってください。",
+            "- 『{$lang}』で書いてください。",
             "- 『{$author}』が書くような文体にしてください。",
-            "- 記事にはあなたの考えや感想、体験などを含めてください。",
+            "- 箇条書きにせず、エッセイのようにしてください。",
         ];
         if (empty($this->conditions) === false) {
             foreach ($this->conditions as $text) {
