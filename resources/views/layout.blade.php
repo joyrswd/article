@@ -29,6 +29,7 @@
     <footer>
         <ul class="container">
             <li><input type="date" name="date" id="dateSelector" max="{{date('Y-m-d')}}" value=""></li>
+            <li><a href="/contact">Contact</a></li>
             <li><a href="/rss/{{$lang}}.xml" target="_blank">RSS</a></li>
         </ul>
         <script>
