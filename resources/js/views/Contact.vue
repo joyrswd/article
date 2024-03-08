@@ -67,7 +67,7 @@ export default {
                     this.email = '';
                     this.message = '';
                 } catch (error) {
-                    this.requestResponse = 'error';
+                    this.requestResponse = 'warning';
                 }
                 this.isSubmitting = false;
             }

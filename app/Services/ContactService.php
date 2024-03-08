@@ -16,6 +16,6 @@ class ContactService
 
     protected function routeNotificationForSlack()
     {
-        return env('CONTACT_SLACK_WEBHOOK_URL');
+        return config('services.slack.contact');
     }
 }
