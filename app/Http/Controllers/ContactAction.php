@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ContactService;
+use App\Http\Requests\ContactRequest;
 use Illuminate\Http\Request;
 
 final class ContactAction extends Controller
@@ -15,7 +16,7 @@ final class ContactAction extends Controller
         $this->service  = $service;
     }
 
-    public function __invoke(Request $request)
+    public function __invoke(ContactRequest $request)
     {
         // slackに通知
         $this->service->send($request->input('email'), $request->input('message'));
