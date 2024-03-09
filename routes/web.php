@@ -15,11 +15,12 @@ use Illuminate\Support\Facades\Route;
 if ($lang = filter_input(INPUT_SERVER, 'HTTP_LANG')) {
     app()->setLocale($lang);
 }
-Route::post('/user/{user}', \App\Http\Controllers\AuthorAction::class)->name('user.show');
+
 Route::post('/home', \App\Http\Controllers\HomeAction::class)->name('home');
 Route::post('/post/{post}', \App\Http\Controllers\ArticleAction::class)->name('post.show');
 Route::post('/date/{date}', \App\Http\Controllers\ArticleDailyAction::class)->name('date.index');
 Route::post('/attr/{attr}', \App\Http\Controllers\AttributeAction::class)->name('attr.index');
+Route::post('/contact', \App\Http\Controllers\ContactAction::class)->middleware('throttle:2,1')->name('contact');
 
 Route::get('/{any}', function(){return view(config('view.layout'));})->where('any', '.*');
 
