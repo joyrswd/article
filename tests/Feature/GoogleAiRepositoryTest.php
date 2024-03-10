@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Repositories\GoogleAiRepository;
 use Illuminate\Support\Facades\Http;
-use PHPUnit\Framework\Assert;
 
 class GoogleAiRepositoryTest extends FeatureTestCase
 {
@@ -28,6 +27,11 @@ class GoogleAiRepositoryTest extends FeatureTestCase
         $repository->addPrompt('テスト');
         $content = $this->callPrivateMethod('prepareContent', $repository);
         $this->assertEquals([
+            'generation_config' => [
+                'candidateCount' => 1,
+                'temperature' => 0.3,
+                'maxOutputTokens' => 700,
+            ],
             'contents' => [
                 'role' => 'user',
                 'parts' => [['text' => 'テスト']]
