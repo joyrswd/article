@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AttributeResoruce extends JsonResource
+class AttributeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -29,7 +29,7 @@ class AttributeResoruce extends JsonResource
         ];
         $embedded = [];
         if (array_key_exists('articles', (array)$this->resource)) {
-            $embedded['posts'] = new ArticleResoruceCollection($this->resource['articles']);
+            $embedded['posts'] = new ArticleResourceCollection($this->resource['articles']);
         }
         if (empty($embedded) === false) {
             $array["_embedded"] = $embedded;

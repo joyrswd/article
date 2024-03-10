@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class AttributeResoruceCollection extends ResourceCollection
+class ArticleResourceCollection extends ResourceCollection
 {
 
     /**
@@ -16,7 +16,7 @@ class AttributeResoruceCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return $this->resource->map(function ($row) {
-            return new AttributeResoruce($row);
+            return new ArticleResource($row);
         })->all();
     }
 }

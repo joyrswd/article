@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ArticleService;
-use App\Http\Resources\ArticleResoruceCollection;
+use App\Http\Resources\ArticleResourceCollection;
 use Illuminate\Http\Request;
 
 final class ArticleDailyAction extends Controller
@@ -22,7 +22,7 @@ final class ArticleDailyAction extends Controller
             ['created_at', '>=',  new \DateTime($date)],
             ['created_at', '<',  new \DateTime($date . ' + 1day')],
         ]);
-        $resource = new ArticleResoruceCollection($articles);
+        $resource = new ArticleResourceCollection($articles);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
     //

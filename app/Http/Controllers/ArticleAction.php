@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ArticleService;
-use App\Http\Resources\ArticleResoruce;
+use App\Http\Resources\ArticleResource;
 use Illuminate\Http\Request;
 
 final class ArticleAction extends Controller
@@ -19,7 +19,7 @@ final class ArticleAction extends Controller
     public function __invoke(int $post, Request $request)
     {
         $aticle = $this->service->getWithAttributes($post);
-        $resource = new ArticleResoruce($aticle);
+        $resource = new ArticleResource($aticle);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
     //
