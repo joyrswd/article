@@ -37,8 +37,10 @@ class WikipediaRepositoryTest extends FeatureTestCase
             'format' => 'json',
             'action' => 'query',
             'prop' => 'extracts',
-            'explaintext' => 'explaintext',
+            'explaintext' => 1,
             'redirects' => 1,
+            'exlimit' => 1,
+            'formatversion' => 2,
             'titles' => 'テスト',
         ], $content);
     }
@@ -55,14 +57,14 @@ class WikipediaRepositoryTest extends FeatureTestCase
                     return new class {
                         public function throw() {}
                         public function json() {
-                            return ['query' => ['pages' => [ 100=> ['extract'=>"リード文\nレスポンス"]]]];
+                            return ['query' => ['pages' => [ 100=> ['extract'=>"リード文\n== カテゴリー ==\nレスポンス"]]]];
                         }
                     };
                 }
             });
         $this->repository->addPrompt('日付');
         $result = $this->repository->requestApi();
-        $this->assertEquals('レスポンス', $result);
+        $this->assertEquals(['リード文','カテゴリー' => ['レスポンス']], $result);
     }
 
     /**

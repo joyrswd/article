@@ -76,10 +76,10 @@ MESSAGE;
         $service = app(ClaudeService::class);
         $this->setPrivateProperty('conditions', [], $service);
         $repository = mock(WikipediaRepository::class)->makePartial();
-        $repository->shouldReceive('requestApi')->once()->andReturn('reference');
+        $repository->shouldReceive('requestApi')->once()->andReturn(['lead', 'key' => ['value1', 'value2']]);
         $this->app->instance(WikipediaRepository::class, $repository);
         $result = $this->callPrivateMethod('makeReference', $service, $date);
-        $this->assertEquals('reference', $result);
+        $this->assertEquals("# key #\nvalue1\nvalue2\n\n", $result);
     }
 
     /**

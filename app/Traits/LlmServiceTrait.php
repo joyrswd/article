@@ -92,7 +92,19 @@ MESSAGE;
         $wiki = app(WikipediaRepository::class);
         $today = $date->format(__("n月j日"));
         $wiki->addPrompt($today);
-        return $wiki->requestApi();
+        $response = $wiki->requestApi();
+        $info = collect($response)->except([0, __('忌日'), __('出典'), __('関連項目')])->toArray();
+        return $this->convertToText($info);
+    }
+
+    private function convertToText(array $data) : string
+    {
+        $texts = "";
+        foreach ($data as $title => $values) {
+            $texts .= "# {$title} #\n";
+            $texts .= collect($values)->flatten()->implode("\n") . "\n\n";
+        }
+        return $texts;
     }
 
     private function translateArticle(string $article): string
