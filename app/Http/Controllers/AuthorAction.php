@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AuthorService;
-use App\Http\Resources\AuthorResoruce;
+use App\Http\Resources\AuthorResource;
 use Illuminate\Http\Request;
 
 final class AuthorAction extends Controller
@@ -19,7 +19,7 @@ final class AuthorAction extends Controller
     public function __invoke(int $user, Request $request)
     {
         $author = $this->service->get($user);
-        $resource = new AuthorResoruce($author);
+        $resource = new AuthorResource($author);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
     //
