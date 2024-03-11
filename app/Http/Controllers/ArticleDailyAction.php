@@ -22,6 +22,9 @@ final class ArticleDailyAction extends Controller
             ['created_at', '>=',  new \DateTime($date)],
             ['created_at', '<',  new \DateTime($date . ' + 1day')],
         ]);
+        if (empty($articles)) {
+            abort(404);
+        }
         $resource = new ArticleResourceCollection($articles);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
