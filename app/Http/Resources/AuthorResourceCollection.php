@@ -15,12 +15,8 @@ class AuthorResourceCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return [
-            '_embedded' => [
-                'users' => $this->resource->map(function ($row) {
-                    return new AuthorResource($row);
-                })->all()
-            ]
-        ];
+        return $this->resource->map(function ($row) {
+            return new AuthorResource($row);
+        })->all();
     }
 }
