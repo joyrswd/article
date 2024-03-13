@@ -21,6 +21,7 @@ Route::post('/user/{user}', \App\Http\Controllers\AuthorAction::class)->name('us
 Route::post('/post/{post}', \App\Http\Controllers\ArticleAction::class)->name('post.show');
 Route::post('/date/{date}', \App\Http\Controllers\ArticleDailyAction::class)->name('date.index');
 Route::post('/attr/{attr}', \App\Http\Controllers\AttributeAction::class)->name('attr.index');
+Route::post('/gallery', \App\Http\Controllers\GalleryAction::class)->name('gallery.index');
 Route::post('/contact', \App\Http\Controllers\ContactAction::class)->middleware('throttle:2,1')->name('contact');
 
 Route::get('/{any}', function(){return view(config('view.layout'));})->where('any', '.*');

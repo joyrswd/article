@@ -98,4 +98,19 @@ class ImageServiceTest extends FeatureTestCase
         $this->assertEquals($expected, $path);
     }
 
+    /**
+     * @test
+     */
+    public function find_正常(): void
+    {
+        $auhtor = Author::factory()->create();
+        $article = Article::factory()->create(['author_id' => $auhtor, 'locale' => app()->currentLocale()]);
+        $image = Image::factory()->create(['article_id' => $article]);
+        $result = $this->service->find([]);
+        $this->assertEquals($image->id, $result[0]['id']);
+        $this->assertEquals($article->id, $result[0]['article']['id']);
+        $this->assertEquals($auhtor->id, $result[0]['article']['author_id']);
+
+    }
+
 }
