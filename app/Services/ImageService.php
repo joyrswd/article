@@ -75,4 +75,14 @@ class ImageService
         ]);
         return $this->repository->read($id);
     }
+
+    public function find(array $param, ?array $options = []) :array
+    {
+        $locale = app()->currentLocale();
+        $options['orderBy'] = ['created_at', 'desc'];
+        $options['whereHas'] = ['article', function($query) use ($locale){
+            $query->where('locale', $locale);
+        }];
+        return $this->repository->find($param, $options);
+    }
 }
