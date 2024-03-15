@@ -36,7 +36,9 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import { createApp } from 'vue';
 import App from "./App.vue";
 import Footer from "./views/Footer.vue";
+import Gallery from "./views/Gallery.vue";
 import router from "./router";
 
 createApp(Footer).mount('#footer');
+createApp(Gallery).mount('#gallery');
 createApp(App).use(router).mount('#app');

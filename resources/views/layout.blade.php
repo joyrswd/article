@@ -16,6 +16,7 @@
         <div class="container p-4">
             <h1 class="display-4"><a href="/" class="text-black-50 text-decoration-none">{{ config('app.name') }}</a></h1>
             @yield('top')
+            <section id="gallery"></section>
         </div>
     </header>
     @yield('middle')
