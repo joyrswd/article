@@ -8,6 +8,7 @@
           <li v-for="(item, index) in infoList" :key="index" class="col-md-3">
             <span><img :src="item._links.self.href" alt="image"></span>
           </li>
+          <li v-if="nextLink?.value??'' !== ''" class="next"><button @click="loadNextPage" class="btn btn-sm btn-info">Load more</button></li>
         </ul>
     </div>
   </div>
@@ -21,16 +22,22 @@ export default {
   setup() {
     const showModal = ref(false);
     const infoList = ref([]);
+    const nextLink = ref('');
   
-    const getInfoList = async () => {
-      const response = await axios.post('/gallery');
-      infoList.value = response.data?.data ?? [];
+    const getInfoList = async (url) => {
+      const response = await axios.post(url);
+      infoList.value = infoList.value.concat(response.data?.data ?? []);
+      nextLink.value = response.data?._links.next.href ?? '';
     };
 
-    return { showModal, infoList, getInfoList };
+    const loadNextPage = async () => {
+      await getInfoList(nextLink.value);
+    }
+  
+    return { showModal, infoList, getInfoList, loadNextPage };
   },
   created() {
-    this.getInfoList();
+    this.getInfoList('/gallery');
   }
 }
 </script>
@@ -104,4 +111,15 @@ export default {
   text-decoration: none;
   cursor: pointer;
 }
+
+.modal ul li.next {
+  width: 100%;
+  height: 3rem;
+  text-align: center;
+}
+
+.modal ul li.next button{
+  max-height: 2rem;
+}
+
 </style>
