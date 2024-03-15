@@ -18,11 +18,11 @@ final class GalleryAction extends Controller
 
     public function __invoke(Request $request)
     {
-        $articles = $this->service->find([], ['limit' => 12]);
-        if (empty($articles)) {
+        $images = $this->service->findByPage(12, [], ['limit' => 12]);
+        if (empty($images['data'])) {
             abort(404);
         }
-        $resource = new ImageResourceCollection($articles);
+        $resource = new ImageResourceCollection($images);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
     //

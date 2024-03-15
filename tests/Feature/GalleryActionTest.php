@@ -44,7 +44,8 @@ class GalleryActionTest extends FeatureTestCase
         $missing = array_pop($ids);
         $this->post('/gallery')->assertStatus(200)
             ->assertJson(['data' => $ids])
-            ->assertJsonMissing(['data' => $missing]);
+            ->assertJsonMissing(['data' => $missing])
+            ->assertJson(['_links' => ['next' => ['href' => '/gallery?page=2']]]);
     }
 
 }

@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Image;
 use App\Repositories\ImageRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ImageRepositoryTest extends FeatureTestCase
 {
@@ -14,12 +15,13 @@ class ImageRepositoryTest extends FeatureTestCase
 
     protected Image $model;
     private ImageRepository $repository;
+    private Author $author;
 
     public function setUp() :void
     {
         parent::setUp();
-        $author = Author::factory()->create();
-        $article = Article::factory()->create(['author_id' => $author->id]);
+        $this->author = Author::factory()->create();
+        $article = Article::factory()->create(['author_id' => $this->author->id]);
         $this->model = Image::factory()->create(['article_id' => $article]);
         $this->repository = app(ImageRepository::class);
     }
@@ -91,4 +93,21 @@ class ImageRepositoryTest extends FeatureTestCase
         $this->assertTrue($flag);
     }
 
+    /**
+     * @test
+     */
+    public function findByPage_正常() : void
+    {
+        $items = [];
+        while(count($items)<2) {
+            $article = Article::factory()->create(['author_id' => $this->author->id]);
+            $items[] = Image::factory()->create(['article_id' => $article->id]);
+        }
+        $result = $this->repository->findByPage(2,[]);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
+        $ids = collect($result->items())->pluck('id');
+        $this->assertContains($this->model->id, $ids);
+        $this->assertContains($items[0]->id, $ids);
+        $this->assertNotContains($items[1]->id, $ids);
+    }
 }

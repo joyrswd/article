@@ -7,6 +7,7 @@ use App\Models\Image;
 use App\Models\Article;
 use App\Models\Author;
 use App\Repositories\ImagickRepository;
+use DateTime;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ImageServiceTest extends FeatureTestCase
@@ -101,16 +102,20 @@ class ImageServiceTest extends FeatureTestCase
     /**
      * @test
      */
-    public function find_正常(): void
+    public function findByPage_正常(): void
     {
         $auhtor = Author::factory()->create();
-        $article = Article::factory()->create(['author_id' => $auhtor, 'locale' => app()->currentLocale()]);
-        $image = Image::factory()->create(['article_id' => $article]);
-        $result = $this->service->find([]);
-        $this->assertEquals($image->id, $result[0]['id']);
-        $this->assertEquals($article->id, $result[0]['article']['id']);
-        $this->assertEquals($auhtor->id, $result[0]['article']['author_id']);
-
+        $items = [];
+        while (count($items) < 3) {
+            $date = '2021-01-0' . (count($items)+1);
+            $article = Article::factory()->create(['author_id' => $auhtor, 'locale' => app()->currentLocale()]);
+            $items[] = Image::factory()->create(['article_id' => $article, 'created_at' => new DateTime($date)]);
+        }
+        $result = $this->service->findByPage(2, []);
+        $this->assertEquals($items[count($items)-1]->id, $result['data'][0]['id']);
+        $this->assertEquals($items[count($items)-2]->id, $result['data'][1]['id']);
+        $ids = array_column($result['data'], 'id');
+        $this->assertNotContains($items[count($items)-3]->id, $ids);
     }
 
 }
