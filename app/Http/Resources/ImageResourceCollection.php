@@ -15,8 +15,17 @@ class ImageResourceCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->resource->map(function ($row) {
-            return new ImageResource($row);
-        })->all();
+        $resource = [];
+        $rows = $this->resource['data']->resource;
+        foreach ($rows as $row) {
+            $resource[] = new ImageResource($row);
+        }
+        $next = $this->resource->get('next_page_url');
+        return [
+            'data' => $resource,
+            '_links' => [
+                'next' => ['href' => empty($next) ? '' : str_replace(url('/'), '', $next->resource)]
+            ]
+        ];
     }
 }
