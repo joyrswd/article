@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\ArticleService;
 use App\Services\AttributeService;
 use App\Services\AuthorService;
+use App\Services\ImageService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -50,6 +51,7 @@ class RouteServiceProvider extends ServiceProvider
             $d = \DateTime::createFromFormat('Y-m-d', $date);
             return ($d && $d->format('Y-m-d') === $date && $d < new \DateTime()) ? $date : abort(404);
         });
-
+        // {user}著者が存在するかチェック
+        Route::bind('image', ImageService::class);
     }
 }

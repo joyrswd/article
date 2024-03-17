@@ -103,9 +103,10 @@ trait CrudRepositoryTrait
         return empty($result) ? [] : $result->toArray();
     }
 
-    public function findOne(array $params): array
+    public function findOne(array $params, ?array $options = []): array
     {
-        $result = $this->model::with($this->relations)->where($params)->get()->first();
+        $builder = $this->createFinder($params, $options);
+        $result = $builder->get()->first();
         return empty($result) ? [] : $result->toArray();
     }
 
