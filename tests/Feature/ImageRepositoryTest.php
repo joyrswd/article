@@ -110,4 +110,16 @@ class ImageRepositoryTest extends FeatureTestCase
         $this->assertContains($items[0]->id, $ids);
         $this->assertNotContains($items[1]->id, $ids);
     }
+
+    /**
+     * @test
+     */
+    public function findOne_正常() : void
+    {
+        $result = $this->repository->findOne([
+            'id' => $this->model->id,
+        ]);
+        $this->assertEquals($this->model->id, $result['id']);
+    }
+
 }

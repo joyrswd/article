@@ -118,4 +118,16 @@ class ImageServiceTest extends FeatureTestCase
         $this->assertNotContains($items[count($items)-3]->id, $ids);
     }
 
+    /**
+     * @test
+     */
+    public function get_正常(): void
+    {
+        $auhtor = Author::factory()->create();
+        $article = Article::factory()->create(['author_id' => $auhtor, 'locale' => app()->currentLocale()]);
+        $image = Image::factory()->create(['article_id' => $article]);
+        $result = $this->service->get($image->id);
+        $this->assertEquals($image->id, $result['id']);
+    }
+
 }

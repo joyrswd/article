@@ -8,7 +8,7 @@
           <li v-for="(item, index) in infoList" :key="index" class="col-md-3">
             <span><img :src="item._links.self.href" alt="image"></span>
           </li>
-          <li v-if="nextLink?.value??'' !== ''" class="next"><button @click="loadNextPage" class="btn btn-sm btn-info">Load more</button></li>
+          <li v-if="nextLink && nextLink.value !== ''" class="next"><button @click="loadNextPage" class="btn btn-sm btn-info">Load more</button></li>
         </ul>
     </div>
   </div>
@@ -34,7 +34,7 @@ export default {
       await getInfoList(nextLink.value);
     }
   
-    return { showModal, infoList, getInfoList, loadNextPage };
+    return { showModal, infoList, nextLink, getInfoList, loadNextPage };
   },
   created() {
     this.getInfoList('/gallery');
