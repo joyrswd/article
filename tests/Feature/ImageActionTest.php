@@ -32,6 +32,11 @@ class ImageActionTest extends FeatureTestCase
         ->assertJson([
             'data' => [
                 'id' => $item->id,
+                '_embedded' => [
+                    'post' => [
+                        'id' => $this->article->id,
+                    ]
+                ]
             ],
         ]);
     }

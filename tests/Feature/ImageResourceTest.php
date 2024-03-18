@@ -31,7 +31,10 @@ class ImageResourceTest extends FeatureTestCase
         $this->assertEquals([
             'id' => 1,
             'model_name' => 'test',
-            '_links' => ['self' => ['href' => '/img/test.png']],
+            '_links' => [
+                'src' => ['href' => '/img/test.png'],
+                'self' => ['href' => '/image/1']
+            ],
             '_embedded' => [
                 'posts' => [[
                     'id' => 1,
