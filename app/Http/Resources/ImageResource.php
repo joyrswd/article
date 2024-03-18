@@ -22,13 +22,16 @@ class ImageResource extends JsonResource
             'model_name' => $this->resource['model_name'],
             "_links" => [
                 'self' => [
+                    'href' => route('image.show', ['image' => $this->resource['id']], false),
+                ],
+                'src' => [
                     'href' => empty($this->resource['path']) ? '' : str_replace(public_path(), '', $this->resource['path']),
                 ],
             ],
         ];
         $embedded = [];
-        if (array_key_exists('articles', (array)$this->resource)) {
-            $embedded['posts'] = new ArticleResourceCollection($this->resource['articles']);
+        if (array_key_exists('article', (array)$this->resource)) {
+            $embedded['post'] = new ArticleResource($this->resource['article']);
         }
         if (empty($embedded) === false) {
             $array["_embedded"] = $embedded;

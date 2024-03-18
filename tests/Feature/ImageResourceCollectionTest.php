@@ -33,7 +33,10 @@ class ImageResourceCollectionTest extends FeatureTestCase
         $this->assertEquals([
             'id' => 2,
             'model_name' => "aperiam",
-            '_links' => ['self' => ['href' => "/tmp/fakerAn2H9m"]],
+            '_links' => [
+                'src' => ['href' => '/tmp/fakerAn2H9m'],
+                'self' => ['href' => '/image/2']
+            ],
         ], $resource['data'][0]);
     }
 }
