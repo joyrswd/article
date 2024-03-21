@@ -147,17 +147,15 @@ footer ul li a:hover {
 }
 
 header>div {
-    display: flex;
+    display: grid;
+    padding-bottom: 0;
+    grid-template-columns: 1fr auto;
     align-items: center;
 }
 
-header>div>* {
-    flex-grow: 1;
-}
-
-header>div>#gallery {
-    flex-grow: 0;
-    flex-basis: auto;
+header>div>h1 {
+    margin: 0;
+    white-space: nowrap;
 }
 
 header>div>#gallery button {
