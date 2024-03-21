@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class AuthorResoruceCollection extends ResourceCollection
+class AttributeResourceCollection extends ResourceCollection
 {
 
     /**
@@ -15,12 +15,8 @@ class AuthorResoruceCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return [
-            '_embedded' => [
-                'users' => $this->resource->map(function ($row) {
-                    return new AuthorResoruce($row);
-                })->all()
-            ]
-        ];
+        return $this->resource->map(function ($row) {
+            return new AttributeResource($row);
+        })->all();
     }
 }

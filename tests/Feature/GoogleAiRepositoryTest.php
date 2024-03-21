@@ -33,7 +33,6 @@ class GoogleAiRepositoryTest extends FeatureTestCase
                 'maxOutputTokens' => 700,
             ],
             'contents' => [
-                'role' => 'user',
                 'parts' => [['text' => 'テスト']]
             ]
         ], $content);

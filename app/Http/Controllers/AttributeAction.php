@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\AttributeService;
-use App\Http\Resources\AttributeResoruce;
+use App\Http\Resources\AttributeResource;
 use Illuminate\Http\Request;
 
 final class AttributeAction extends Controller
@@ -19,7 +19,7 @@ final class AttributeAction extends Controller
     public function __invoke(int $attr, Request $request)
     {
         $attribute = $this->service->findWithArticles($attr);
-        $resource = new AttributeResoruce($attribute);
+        $resource = new AttributeResource($attribute);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
     //

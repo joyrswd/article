@@ -23,7 +23,6 @@ class GoogleAiRepository extends ApiRepository
                 'maxOutputTokens' => 700,
             ],
             'contents' => [
-                'role' => 'user',
                 'parts' => array_map(function($prompt){ return ['text' => $prompt];}, $this->prompt)
             ]
         ];

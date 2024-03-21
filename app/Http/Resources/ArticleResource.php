@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ArticleResoruce extends JsonResource
+class ArticleResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -38,7 +38,7 @@ class ArticleResoruce extends JsonResource
         ];
         $embedded = [];
         if (array_key_exists('author', (array)$this->resource)) {
-            $embedded['user'] = new AuthorResoruce($this->resource['author']);
+            $embedded['user'] = new AuthorResource($this->resource['author']);
         }
         if (empty($embedded) === false) {
             $array["_embedded"] = $embedded;
