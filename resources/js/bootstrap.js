@@ -40,5 +40,5 @@ import Gallery from "./views/Gallery.vue";
 import router from "./router";
 
 createApp(Footer).mount('#footer');
-createApp(Gallery).mount('#gallery');
+createApp(Gallery).use(router).mount('#gallery');
 createApp(App).use(router).mount('#app');
