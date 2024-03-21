@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ArticleService;
-use App\Http\Resources\ArticleResoruceCollection;
+use App\Http\Resources\ArticleResourceCollection;
 use Illuminate\Http\Request;
 
 final class HomeAction extends Controller
@@ -19,7 +19,7 @@ final class HomeAction extends Controller
     public function __invoke(Request $request)
     {
         $aticle = $this->service->find([], ['limit' => 12]);
-        $resource = new ArticleResoruceCollection($aticle);
+        $resource = new ArticleResourceCollection($aticle);
         return $resource->response($request)->header('content-type', 'application/hal+json');
     }
 }

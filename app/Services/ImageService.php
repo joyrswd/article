@@ -22,6 +22,19 @@ class ImageService
         $this->dirs = array_merge($this->dirs, [date('Y'), date('m'), date('d')]);
     }
 
+    /**
+     * {image}のバリデーションルール
+     * @see \App\Providers\RouteServiceProvider::boot()
+     */
+    public function bind(mixed $value): int
+    {
+        $int = filter_var($value, FILTER_VALIDATE_INT);
+        if (is_int($int) && $this->repository->read($int)) {
+            return $int;
+        }
+        abort(404, 'Not found.');
+    }
+
     public function put(string $binary, string $watermark): string
     {
         $path = $this->prepareImagePath($binary);
@@ -75,4 +88,30 @@ class ImageService
         ]);
         return $this->repository->read($id);
     }
+
+    public function findByPage(int $page, array $param, ?array $options = []) :array
+    {
+        $locale = app()->currentLocale();
+        $options['orderBy'] = ['created_at', 'desc'];
+        $options['whereHas'] = ['article', function($query) use ($locale){
+            $query->where('locale', $locale);
+        }];
+        $pages = $this->repository->findByPage($page, $param, $options);
+        return $pages->toArray();
+    }
+
+    public function get(int $id) :array
+    {
+        $locale = app()->currentLocale();
+        return $this->repository->findOne([
+            'id' => $id,
+        ], [
+            'whereHas'=> [
+                'article', function($query) use ($locale){
+                    $query->where('locale', $locale);
+                }
+            ]
+        ]);
+    }
+
 }

@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 trait CrudRepositoryTrait
 {
@@ -85,20 +87,33 @@ trait CrudRepositoryTrait
         }
     }
 
-    public function find(array $params, ?array $options = []): array
+    private function createFinder(array $params, ?array $options = []) : Builder
     {
         $builder = $this->model::with($this->relations)->where($params);
         foreach ($options as $key => $value) {
             call_user_func_array([$builder, $key], (array)$value);
         }
+        return $builder;
+    }
+
+    public function find(array $params, ?array $options = []): array
+    {        
+        $builder = $this->createFinder($params, $options);
         $result =$builder->get();
         return empty($result) ? [] : $result->toArray();
     }
 
-    public function findOne(array $params): array
+    public function findOne(array $params, ?array $options = []): array
     {
-        $result = $this->model::with($this->relations)->where($params)->get()->first();
+        $builder = $this->createFinder($params, $options);
+        $result = $builder->get()->first();
         return empty($result) ? [] : $result->toArray();
+    }
+
+    public function findByPage(int $page, array $params, ?array $options = []): LengthAwarePaginator
+    {
+        $builder = $this->createFinder($params, $options);
+        return $builder->paginate($page);
     }
 
 }

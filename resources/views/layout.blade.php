@@ -16,6 +16,7 @@
         <div class="container p-4">
             <h1 class="display-4"><a href="/" class="text-black-50 text-decoration-none">{{ config('app.name') }}</a></h1>
             @yield('top')
+            <section id="gallery"></section>
         </div>
     </header>
     @yield('middle')
@@ -26,24 +27,7 @@
     $lang = app()->currentLocale();
     @endphp
     @section('bottom')
-    <footer>
-        <ul class="container">
-            <li><input type="date" name="date" id="dateSelector" max="{{date('Y-m-d')}}" value=""></li>
-            <li><a href="/contact">Contact</a></li>
-            <li><a href="/rss/{{$lang}}.xml" target="_blank">RSS</a></li>
-        </ul>
-        <script>
-            {
-                const dir = "{{route('date.index', ['date' => date('Y-m-d')])}}";
-                document.getElementById('dateSelector').addEventListener('change', (e) => {
-                    const date = new Date(e.target.value);
-                    if(isNaN(date.getDate()) === false) {
-                        location.href = dir.split('/').slice(0, -1).join('/') + '/' +e.target.value;
-                    }
-                });
-            }
-        </script>
-    </footer>
+    <footer id="footer"></footer>
     @show
 </body>
 
