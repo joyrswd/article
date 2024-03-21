@@ -3,7 +3,7 @@
     <button @click="showModal = true" class="btn btn-sm btn-success">Gallery</button>
 
     <div v-if="showModal" class="modal">
-      <span class="close" @click="showModal = false">×</span>
+      <span class="close" @click="showModal = showCarousel = false">×</span>
       <ul class="row">
         <li v-for="(item, index) in infoList" :key="index" class="col-md-3">
           <span><img :src="item._links.src.href" @click="loadImage" :data-index="index" alt="image"></span>
@@ -14,12 +14,12 @@
       <div v-if="showCarousel" class="carouselContainer">
         <div id="carouselExampleCaptions" class="carousel slide">
           <div class="carousel-inner">
-            <a v-for="(item, index) in infoList" :class="{'carousel-item':true, 'active':activeImage === index}" @click="movePage" :href="`${item._embedded.post._links.self.href}`">
+            <router-link v-for="(item, index) in infoList" :class="{'carousel-item':true, 'active':activeImage === index}" @click="showModal = showCarousel = false" :to="`${item._embedded.post._links.self.href}`">
                 <img :src="item._links.src.href" alt="image" class="d-block">
                 <div class="carousel-caption">
                   <h5>{{ item._embedded.post.title }}</h5>
                 </div>
-              </a>
+              </router-link>
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"
             data-bs-slide="prev">
